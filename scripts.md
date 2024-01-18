@@ -1,4 +1,4 @@
-# C++ Classes
+# Structured C++
 
 During this meetup we be discussing how to define our own types in C++ using classes and
 structures. This will involve looking at how C++ structures data in memory by created
@@ -11,7 +11,7 @@ useful.
 
 ## Overview
 
-- [C++ Classes](#c-classes)
+- [Structured C++](#structured-c)
   - [Overview](#overview)
   - [Some Terminology](#some-terminology)
     - [Small Notes](#small-notes)
@@ -29,6 +29,7 @@ useful.
   - [Polymorphism](#polymorphism)
     - [Parametric Polymorphism](#parametric-polymorphism)
     - [Virtual Polymorphism](#virtual-polymorphism)
+  - [Sources](#sources)
 
 ===>
 
@@ -70,17 +71,37 @@ as what instructions (operations) can interact with those bits.
 
 When referring to an *"identifier"*...
 
+---v
+
+*"System"* refers to the Operating System (OS) kernel your computer is using in combination with any
+core libraries used to make a complete OS and the architecture of the CPU used to run the system.
+
+---v
+
+*"Target"* refers to the type of machine code a compiler generates for a given CPU architecture from
+some source code.
+
+---v
+
+*" (CPU) Architecture"* is the instruction set of a CPU eg. x86/x86_64, ARM etc.
+
 ===>
 
 ### Small Notes
 
----
+---v?
 
 Throughout these slides I will be using C++23's `std::print` and `std::println` functions.
 These are not widely available in compilers yet but are available using the
 [`{fmt}`](https://fmt.dev) library.
 
----
+<!-- ---v?
+
+Throughout the examples in these slides I will exclusively be using the `struct` keyword to
+define types in C++. This is so that you will not confuse the use of the `class` with OOP
+classes -->
+
+---v?
 
 Some links are Godbolt links which a small C++ build instances. Follow them to test code
 snippets in the browser!
@@ -90,8 +111,9 @@ snippets in the browser!
 ## Basic Data Aggregations
 
 First we will look at how to build the most basic structures in C++. These are known as
-data aggregates and a really an amalgamation of other pieces of data. The syntax for
-defining a type is as follows.
+data aggregates and a really an amalgamation of other pieces of data. Structures are
+introduced by the `struct` or `class` keyword followed by the name of the new type along
+with a semicolon-ending braces containing the types details.
 
 ```cxx
 struct A {
@@ -99,11 +121,16 @@ struct A {
 };
 ```
 
+---v
+
+We won't use the `class` keyword for now due to it having some different default access
+permissions to `struct` which will be discussed [later](#access-control).
+
 --->
 
 We can then add member variables by declaring them the same as we would in free functions.
-You can add any number of members to a type and they can be access using the `obj.var`
-syntax.
+You can add any number of members to a type. Note that our structure has no special properties,
+it is simply an amalgamation of its members.
 
 ```cxx
 struct A {
@@ -113,29 +140,73 @@ struct A {
 };
 ```
 
+--->
+
+We can initialise the aggregate structure using [aggregate initialisation](https://en.cppreference.com/w/cpp/language/aggregate_initialization) with [designated initializers](https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers).
+
+```cxx
+struct A {
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto const a = A { .chr = 'a', .num = 123, .dec = 3.14f };
+
+    return 0;
+}
+```
+
+--->
+
+Members can be access using the `obj.var` syntax.
+
+```cxx
+struct A {
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto const a = A { .chr = 'a', .num = 123, .dec = 3.14f };
+
+    // Reads data stored in members.
+    std::println("{}", a.chr);  // a
+    std::println("{}", a.num);  // 123
+    std::println("{}", a.dec);  // 3.14
+
+    return 0;
+}
+```
+
+See it on Godbolt ⚡: <https://godbolt.org/z/MnGraPs8P>
+
 <!-- fragment -->
-Note that our structure has no special properties, it is simply an amalgamation of its members.
 So how does it look in memory? What shape does the compiler give our structure?
 
 ===>
 
 ## Data Layout
 
-In C++, structures will (generally) have their members located right next to each other
-in memory making the structure very compact. Which is part of C++'s goal for Zero Cost
-Abstraction meaning what you don't use you don't pay for.
+> In C++, structures will (generally) have their members located right next to each other
+> in memory making the structure very compact. Which is part of C++'s goal for Zero Cost
+> Abstraction meaning what you don't use you don't pay for.
 
 <!-- Diagram of structures layout -->
 
 --->
 
-As we can see our structure only takes of up as much space as the sum of the sizes of its
-members...
+> As we can see our structure only takes of up as much space as the sum of the sizes of its
+> members...
 
 <!-- New diagram with animation showing the size of members and total size -->
 
-...almost. If we actually [build & run](https://godbolt.org/z/5hEfeaTK9) we can see that our structures
-size is 12 bytes, not 9 bytes. Why has the compiler made `A` 3 bytes larger than it needs to be?
+> ...almost. If we actually [build & run](https://godbolt.org/z/5hEfeaTK9) we can see that our structures
+> size is 12 bytes, not 9 bytes. Why has the compiler made `A` 3 bytes larger than it needs to be?
 
 <!-- Take questions -->
 
@@ -151,107 +222,86 @@ ability to read and write to the address the member is located at.
 
 #### Natural Alignment
 
-*Natural Alignment* means that the starting address of some piece of data is located at an address that
-is a multiple of its size.
+> *Natural Alignment* means that the starting address of some piece of data is located at an address that
+> is a multiple of its size.
 
-<!-- fragment move in -->
-The CPU always accesses memory by a single memory word at a time. This means that the largest primitive
-data type supported by the computer must be able to fit into the size of a memory word otherwise the
-CPU would have to access a single data type in chunks causing the CPU to have to coordinate between two
-memory pages. Luckily most, if not all systems behave have a memory word size that is at least as large
-as its largest supported primitive type.
+> The CPU always accesses memory by a single memory word at a time. This means that the largest primitive
+> data type supported by the computer must be able to fit into the size of a memory word otherwise the
+> CPU would have to access a single data type in chunks causing the CPU to have to coordinate between two
+> memory pages. Luckily most, if not all systems behave have a memory word size that is at least as large
+> as its largest supported primitive type.
 
-<!-- fragment move in -->
-However, when dealing structured data we often have datums with different sizes. If they are packed
-tightly together, the memory can become misaligned resulting in the split memory access issues mention
-before. We can see this in our `A` type.
+> However, when dealing structured data we often have datums with different sizes. If they are packed
+> tightly together, the memory can become misaligned resulting in the split memory access issues mention
+> before. We can see this in our `A` type.
 
 ---v
 
-Let's say we want to access each member of an instance of `A` and the members are packed right next to
-each other. First the CPU with fetch the first full memory word size (assumed to be 64-bits or 8 bytes)
-which will retrieve all of `chr`, `num` and 3 bytes of `dec`.
+> Let's say we want to access each member of an instance of `A` and the members are packed right next to
+> each other. First the CPU with fetch the first full memory word size (assumed to be 64-bits or 8 bytes)
+> which will retrieve all of `chr`, `num` and 3 bytes of `dec`.
 
 <!-- diagram of retrieved memory -->
 
-The CPU can manipulate `chr` and `num` fine because all of their data has been access however, we cannot
-manipulate `dec`. From here the CPU would have to verify the remain bytes of `dec` are available in the
-cache, retrieve them if they are not, and combine it with the existing data it holds. This would require
-lots of complex circuitry to achieve.
+> The CPU can manipulate `chr` and `num` fine because all of their data has been access however, we cannot
+> manipulate `dec`. From here the CPU would have to verify the remain bytes of `dec` are available in the
+> cache, retrieve them if they are not, and combine it with the existing data it holds. This would require
+> lots of complex circuitry to achieve.
+
+<!-- Diagram showing left out data from memory fetch of `A` -->
 
 ---v
 
-Instead, compilers will add padding so that certain datums start at some power-of-2 memory address
-boundary. In this case, the compiler add 3 bytes of padding after `chr` so that any data for the member
-`dec` is pushed out of the memory word containing `chr` and `num` which means the data of `dec` is not
-split across memory words. This makes `num` now live on the 32-bit boundary line and `dec` on the
-64-bit boundary line. This dramatically reduced the logic the CPU needs to perform as it simply just
-fetches performs another access to the needed datum (`dec`) and it can guarantee it will all be there.
+> Instead, compilers will add padding so that certain datums start at some power-of-2 memory address
+> boundary. In this case, the compiler add 3 bytes of padding after `chr` so that any data for the member
+> `dec` is pushed out of the memory word containing `chr` and `num` which means the data of `dec` is not
+> split across memory words. This makes `num` now live on the 32-bit boundary line and `dec` on the
+> 64-bit boundary line. This dramatically reduced the logic the CPU needs to perform as it simply just
+> fetches performs another access to the needed datum (`dec`) and it can guarantee it will all be there.
 
 <!-- True structure diagram with shift -->
 
 --->
 
-<!-- ### Unnamed
-
-This is because C++ has value semantics by default which means that
-you interact with a variable you interact directly with the underlying object, not a reference
-to a *"type compatible"* object. This means that there is only a single identifier for any
-object in memory...
-
-#### Reference Semantics in C++
-
-...sorta. While C++ has value semantics by default it does have second class support for
-pointer and reference types allowing you to share data via multiple identifiers. But how do
-pointer and reference types still have value semantics?
-
-##### Pointers
-
-Pointers still obey C++'s value semantics because the value of a pointer is just the memory
-address of some other piece of data, making a pointer a special (unsigned) integer. The value
-of a pointer is just some number; but unlike other numbers, pointers can be *dereferenced*
-making it appear as if it is the object itself.
-
-<!-- Pointer diagram --\>
-
-##### References
-
-References are just like pointers but will automatically dereference themselves and cannot
-point to nothing making them more an alias for another object. -->
-
 ### Application Binary Interface
 
-How does a compiler map *types* in a programming language to an actual layout in memory? Well lets first look at how a program (executable) interacts with a library.
+But how does the compiler *know* what shape to give a programming language's types and structures in memory?
+To understand this we will need to look at how two programs interact.
 
 ---v
 
-When building a library you will expose certain *symbols* which can be used in the source code
-of a dependant program or library. The signature of these symbols; along with the semantics
-imposed by the language these two programs are written in, creating the interface in which these
-two source code program modules can interact with each other. This is know as an API
-(Application Programming Interface).
+> When building a library you will often expose certain *symbols* which can be used in the source code of a
+> dependant program or library. The signature of these symbols; along with the semantics imposed by the
+> language these two programs are written in, creating the interface in which these two source code program
+> modules can interact with each other. This is know as an API (Application Programming Interface).
+
+<!-- Show example of source code importing a module -->
 
 ---v
 
-The compiled version of an API is what is known as the ABI (Application Binary Interface). An
-ABI is how two binary program modules (ie. compiled source code) interact with each other. The
-ABI is usually defined and implemented by compilers and describes how function/subroutines
-are executed, how types get mapped to memory and how executables find symbols exposed by
-external libraries among many other things.
+> The compiled version of an API is what is known as the ABI (Application Binary Interface). An ABI is how
+> two binary program modules (ie. compiled source code) interact with each other. The ABI is usually defined
+> and implemented by compilers and describes how function/subroutines are executed, how types and structures
+> get mapped to memory etc. in a systems machine code.
+
+<!-- Show example of exe interacting with .so or other lib -->
 
 ---v
 
-Programming languages usually have an ABI between the target architecture and the programming
-language (implementation) itself. This is used to define the layout, size and alignment of
-the languages data types.
+> Therefore, how structures are mapped onto memory is described by the systems ABI such that different binary
+> program modules can communicate and understand each other. This is essential because it is what allows your
+> programs to interact with your Operating System (OS) which is how it is able to execute!
 
----v
+<!-- Some diagram, not sure yet -->
 
-Having a *"stable"* ABI for a library prevents dependant programs from having to be recompiled
-if a new library is distributed, installed etc.. This is especially useful for programming
-languages as it allows developers to ensure that the mapping between the program compiled
-from source code written in said language is consistent. What this means is if your language
-undergoes an upgrade to compiler, interpreter, standard library etc. you will still be able to link to it and use it with no problems. If the ABI of the language changed and became the default for your system you would have to recompile every program written in that language for it to work properly.
+<!-- ---v
+
+Having a *"stable"* ABI for a library prevents dependant programs from having to be recompiled if a new library
+is distributed, installed etc.. This is especially useful for programming languages as it allows developers to
+ensure that the mapping between the program compiled from source code written in said language is consistent.
+What this means is if your language undergoes an upgrade to compiler, interpreter, standard library etc. you
+will still be able to link to it and use it with no problems. If the ABI of the language changed and became the
+default for your system you would have to recompile every program written in that language for it to work properly.
 
 ---v
 
@@ -261,13 +311,109 @@ use by most compilers (not MSVC).
 A language/systems ABI is also what allows two (or more) languages to interact with each other.
 This is done by introducing a Foreign Function Interface (FFI) which wraps a symbol from one language in the language trying to call the *foreign* function. This allows new languages to
 leverage the capabilities of libraries written in different languages like Operating System (OS)
-calls. Often languages with create FFI to C libraries.
+calls. Often languages with create FFI to C libraries. -->
 
 ---v
 
+Now that we have looked at some of the machine level details of C++'s structures lets move
+back into some more language level constructs.
+
 ## Access Control
 
-~
+C++ allows us to control which members can be accessed from outside the class. This is done
+with access modifier labels. These will apply to any members; data or function, below the
+label in the types definition. Access modifiers allow use to encapsulate/internalize parts
+of the type so it cannot be modified by anyone outside the type itself.
+
+--->
+
+<!-- table of rules for access modifiers -->
+<!-- <style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-c3ow">Specifiers</th>
+    <th class="tg-c3ow">Same Class</th>
+    <th class="tg-c3ow">Derived Class</th>
+    <th class="tg-c3ow">Outside Class</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`public`</span></td>
+    <td class="tg-c3ow">Yes</td>
+    <td class="tg-c3ow">Yes</td>
+    <td class="tg-c3ow">Yes</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`private`</span></td>
+    <td class="tg-c3ow">Yes</td>
+    <td class="tg-c3ow">No</td>
+    <td class="tg-c3ow">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`protected`</span></td>
+    <td class="tg-c3ow">Yes</td>
+    <td class="tg-c3ow">Yes</td>
+    <td class="tg-c3ow">No</td>
+  </tr>
+</tbody>
+</table> -->
+
+<!-- fragment -->
+We will look at the first two columns in more detail when discussing [virtual polymorphism](#virtual-polymorphism).
+
+---v
+
+Types declared with the `struct` keyword will have the `public` modifier applied to the
+whole class by default.
+
+Types declared with the `class` keyword will have the `private` modifier applied to the
+whole class by default.
+
+This is the only difference between the `class` and `struct` keyword in C++.
+
+--->
+
+Let's modify our `A` type from earlier by making `A::dec` private.
+
+```cxx
+struct A {
+    char chr;
+    int num;
+
+private:
+    float dec;
+};
+
+auto main() -> int {
+
+    //! We can no longer use aggregate initializer
+    //! because we've 'hidden' parts of A making
+    //! it no longer an aggregate type.
+    auto a = A { };
+    a.chr = 'a';
+    a.num = 123;
+
+    std::println("{}", a.chr);  // a
+    std::println("{}", a.num);  // 123
+    // fmt::println("{}", a.dec);  //! Now fails if uncommented
+
+    return 0;
+}
+
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/fW5xKPoEY>
 
 ## Defining Operations on Custom types
 
@@ -298,5 +444,9 @@ calls. Often languages with create FFI to C libraries.
 ~
 
 ### Virtual Polymorphism
+
+~
+
+## Sources
 
 ~

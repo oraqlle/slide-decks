@@ -1,4 +1,4 @@
-# C++ Classes
+# Structured C++
 
 This is a [reveal.js] presentation for a talk discussion how C++ classes work which took place during a internal meetup between Monash DeepNeuron members.
 
