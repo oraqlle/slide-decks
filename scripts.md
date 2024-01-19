@@ -1,15 +1,15 @@
 # Structured C++
 
-During this meetup we be discussing how to define our own types in C++ using classes and
-structures. This will involve looking at how C++ structures data in memory by created
+## Overview
+
+During this meetup we will be discussing how to define our own types in C++ using classes
+and structures. This will involve looking at how C++ structures data in memory by created
 basic aggregations. We will then briefly look at how to hide parts of a type to users of
 the type followed by looking at how to define operations on our custom types. We will
 then look at how to control the lifetime of our types and bind the lifetime or resources
 our type owns to the lifetime of the containing class itself using RAII. At the end we
 will look at some extra properties possessed by classes and highlight how they can be
 useful.
-
-## Overview
 
 - [Structured C++](#structured-c)
   - [Overview](#overview)
@@ -44,49 +44,50 @@ useful.
 ---v
 
 When I refer to an *"object"* I am refer to a piece of data that lives in memory ie. the
-actual 1s and 0s that make up the piece of data. An object has some value which is
+actual 1s and 0s that make up the piece of data. An object has *some* value which is
 of *some* type.
 
 ---v
 
 A *"value"* is the interpretation of some collection of bits according to a type. What
 this means is that the same set of bits *might* have different meanings depending on
-whatever type they are bound by eg. the bits `11110010011011010101111010111101` have the
+whatever type they are bound by.
+
+<!-- Diagram illustrating this example: the bits `11110010011011010101111010111101` have the 
 value `-227713347` when interpreted as a C `int` but have the value `4067253949` when
-interpreted as a C `unsigned int`.
+interpreted as a C `unsigned int`. -->
 
 ---v
 
-The *"type"* of some value is an abstraction within a programming language that allows
-us to constrain what operations and values an object can have.
+The *"type"* of some value is an abstraction within the programming language which constrains
+what operations and values an object can have. This includes built-in data types like `int`,
+`float`, `char` etc., often called POD (Plain Old Data) types in C++ as well as user-defined
+types introduced using the `class` and `struct` keywords.
 
 ---v
 
-When I refer to *"types"* or *"structure"* in C++, I am referring to C++'s various built-in
-language-level data types; eg. `int`, `float`, `char` etc., often called POD (Plain Old Data)
-types as well as classes and structures defined using the `class` and `struct` keywords
-which can come from either the standard library, third-party libraries or your own code.
-Combined with the previous definition; a type is anything in C++ that gives meaning to
-objects* by defining and constraining what *values* (ie. valid bits) they can have as well
-as what instructions (operations) can interact with those bits.
+When referring to an *"identifier"* I am referring to the in-source name given to datums (variables),
+free functions and member functions.
 
----v
-
-When referring to an *"identifier"*...
+<!-- Diagram of variable syntax indicating identifier, type and value. -->
 
 ---v
 
 *"System"* refers to the Operating System (OS) kernel your computer is using in combination with any
 core libraries used to make a complete OS and the architecture of the CPU used to run the system.
 
+<!-- Diagram of kernel in system stack -->
+
 ---v
 
 *"Target"* refers to the type of machine code a compiler generates for a given CPU architecture from
 some source code.
 
+<!-- Diagram of compiler pipeline to different targets -->
+
 ---v
 
-*" (CPU) Architecture"* is the instruction set of a CPU eg. x86/x86_64, ARM etc.
+*"(CPU) Architecture"* is the set of instructions available on a CPU eg. x86/x86_64, ARM etc.
 
 ===>
 
