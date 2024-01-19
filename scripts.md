@@ -14,11 +14,13 @@ useful.
 - [Structured C++](#structured-c)
   - [Overview](#overview)
   - [Some Terminology](#some-terminology)
-    - [Small Notes](#small-notes)
+    - [Some Small Notes](#some-small-notes)
   - [Basic Data Aggregations](#basic-data-aggregations)
   - [Data Layout](#data-layout)
     - [Padding](#padding)
       - [Natural Alignment](#natural-alignment)
+        - [CPU Memory Access (Packed Data)](#cpu-memory-access-packed-data)
+        - [CPU Memory Access (Padded Data)](#cpu-memory-access-padded-data)
     - [Application Binary Interface](#application-binary-interface)
   - [Access Control](#access-control)
   - [Defining Operations on Types](#defining-operations-on-types)
@@ -91,13 +93,13 @@ some source code.
 
 ===>
 
-### Small Notes
+### Some Small Notes
 
 ---v?
 
 Throughout these slides I will be using C++23's `std::print` and `std::println` functions.
-These are not widely available in compilers yet but are available using the
-[`{fmt}`](https://fmt.dev) library.
+These are not widely available in compilers yet but but there are mirror versions available
+from the [`{fmt}`](https://fmt.dev) library.
 
 <!-- ---v?
 
@@ -107,34 +109,38 @@ classes -->
 
 ---v?
 
-Some links are Godbolt links which a small C++ build instances. Follow them to test code
-snippets in the browser!
+In some slides you might see
+
+"See it on Godbolt ⚡:"
+
+followed by a link. These take you to an
+online compiler instance setup to run the example which run in your browser!
 
 ===>
 
 ## Basic Data Aggregations
 
-First we will look at how to build the most basic structures in C++. These are known as
-data aggregates and a really an amalgamation of other pieces of data. Structures are
-introduced by the `struct` or `class` keyword followed by the name of the new type along
-with a semicolon-ending braces containing the types details.
+We can introduce a new type using the <code>struct</code> or <code>class</code> keywords.
+
+> First we will look at how to build the basic structures in C++. These are known as aggregates
+> are just an amalgamation of data and they are declared with the `struct` or `class` keywords.
 
 ```cxx
 struct A {
-    // ... type
+    // ... details of the type
 };
 ```
 
----v
-
-We won't use the `class` keyword for now due to it having some different default access
-permissions to `struct` which will be discussed [later](#access-control).
+> We won't use the `class` keyword for now due to it having some different default access
+> permissions to `struct` which will be discussed [later](#access-control).
 
 --->
 
-We can then add member variables by declaring them the same as we would in free functions.
-You can add any number of members to a type. Note that our structure has no special properties,
-it is simply an amalgamation of its members.
+To add data to the type we simply declare some member variables without an initial value.
+
+> We can then add member variables by declaring them the same as we would in free functions.
+> You can add any number of members to a type. Note that our structure has no special properties,
+> it is simply an amalgamation of its members.
 
 ```cxx
 struct A {
@@ -190,7 +196,7 @@ auto main() -> int {
 See it on Godbolt ⚡: <https://godbolt.org/z/MnGraPs8P>
 
 <!-- fragment -->
-So how does it look in memory? What shape does the compiler give our structure?
+So how does this look in memory? What shape does the compiler give our structure?
 
 ===>
 
@@ -204,66 +210,84 @@ So how does it look in memory? What shape does the compiler give our structure?
 
 --->
 
-> As we can see our structure only takes of up as much space as the sum of the sizes of its
-> members...
-
 <!-- New diagram with animation showing the size of members and total size -->
 
-> ...almost. If we actually [build & run](https://godbolt.org/z/5hEfeaTK9) we can see that our structures
-> size is 12 bytes, not 9 bytes. Why has the compiler made `A` 3 bytes larger than it needs to be?
-
-<!-- Take questions -->
+...almost. If we actually check this on [Godbolt](https://godbolt.org/z/5hEfeaTK9) using
+the `sizeof` operator we can see that our structures size is 12 bytes, not 9 bytes. Why
+has the compiler made `A` 3 bytes larger than it needs to be?
 
 ---v
 
 ### Padding
 
-In some situations the compiler may add empty bytes; known as padding, before a member of a structure
-so that it is *"byte aligned"* or *"naturally aligned"*. This is done to help optimises the CPU's
-ability to read and write to the address the member is located at.
+In some situations the compiler may add empty bytes; known as padding, around member variables
+of a structure so that it is *"byte aligned"* or *"naturally aligned"*. This is done to help
+optimises the CPU's ability to read and write to the address the member is located at.
 
 ---v
 
 #### Natural Alignment
 
-> *Natural Alignment* means that the starting address of some piece of data is located at an address that
-> is a multiple of its size.
+*Natural Alignment* means that a objects' starting memory address is a multiple of its size in bytes.
 
-> The CPU always accesses memory by a single memory word at a time. This means that the largest primitive
-> data type supported by the computer must be able to fit into the size of a memory word otherwise the
-> CPU would have to access a single data type in chunks causing the CPU to have to coordinate between two
-> memory pages. Luckily most, if not all systems behave have a memory word size that is at least as large
-> as its largest supported primitive type.
+---v
 
-> However, when dealing structured data we often have datums with different sizes. If they are packed
+The CPU will always accesses memory by a single memory word at a time. Let's see how padding affects
+how the CPU accesses memory when reading in a fixed size word with our `A` type.
+
+<!-- auto-slide sections showing CPU reading memory one word at a time with svg's -->
+
+> This means that the largest
+> primitive > data type supported by the computer must be able to fit into the size of a memory word
+> otherwise the CPU would have to access a single data type in chunks causing the CPU to have to
+> coordinate between two > memory pages. Luckily most, if not all systems behave have a memory word
+> size that is at least as large as its largest supported primitive type.
+
+> However, when dealing structured data we often have data with different sizes. If they are packed
 > tightly together, the memory can become misaligned resulting in the split memory access issues mention
 > before. We can see this in our `A` type.
 
 ---v
 
+##### CPU Memory Access (Packed Data)
+
+Misaligned memory causes the CPU to fetch partial data meaning it need to find the missing data.
+
+<!-- diagram of retrieved memory and how data has been left out using auto-slide and svgs -->
+
 > Let's say we want to access each member of an instance of `A` and the members are packed right next to
 > each other. First the CPU with fetch the first full memory word size (assumed to be 64-bits or 8 bytes)
-> which will retrieve all of `chr`, `num` and 3 bytes of `dec`.
-
-<!-- diagram of retrieved memory -->
-
-> The CPU can manipulate `chr` and `num` fine because all of their data has been access however, we cannot
-> manipulate `dec`. From here the CPU would have to verify the remain bytes of `dec` are available in the
-> cache, retrieve them if they are not, and combine it with the existing data it holds. This would require
-> lots of complex circuitry to achieve.
-
-<!-- Diagram showing left out data from memory fetch of `A` -->
+> which will retrieve all of `chr`, `num` and only 3 bytes of `dec`, losing the rest. In order to operate
+> on `dec` the CPU would have to verify if the remaining bytes are available in its cache; as it may have
+> been lost along, retrieve them if they are not; performing a full RAM access request which is very costly
+> when you have the rest of the data ready, and combine it with the existing data of `dec`. This would
+> require lots of complex circuitry to achieve.
 
 ---v
+
+##### CPU Memory Access (Padded Data)
+
+The compiler will add 3 bytes of padding after `chr` so that `dec` is naturally aligned on the
+32-bit boundary.
 
 > Instead, compilers will add padding so that certain datums start at some power-of-2 memory address
 > boundary. In this case, the compiler add 3 bytes of padding after `chr` so that any data for the member
 > `dec` is pushed out of the memory word containing `chr` and `num` which means the data of `dec` is not
 > split across memory words. This makes `num` now live on the 32-bit boundary line and `dec` on the
-> 64-bit boundary line. This dramatically reduced the logic the CPU needs to perform as it simply just
-> fetches performs another access to the needed datum (`dec`) and it can guarantee it will all be there.
+> 64-bit boundary line.
 
 <!-- True structure diagram with shift -->
+
+---v
+
+Now the CPU has a much easier time access memory correctly.
+
+<!-- diagram of retrieved memory and how data isn't being left out anymore using auto-slide and svgs -->
+
+> This dramatically reduced the logic the CPU needs to perform as it simply just fetches performs another
+> access to the needed datum (`dec`) and it can guarantee it will all be there. This is a common theme in
+> the relationship between software and hardware. Often by making certain things true to the benefit of
+> the hardwares design we can dramatically improve the performance of our software.
 
 --->
 
@@ -274,6 +298,9 @@ To understand this we will need to look at how two programs interact.
 
 ---v
 
+The symbols you use from other modules form an Application Programming Interface (API) between your source
+code and the other module.
+
 > When building a library you will often expose certain *symbols* which can be used in the source code of a
 > dependant program or library. The signature of these symbols; along with the semantics imposed by the
 > language these two programs are written in, creating the interface in which these two source code program
@@ -282,6 +309,9 @@ To understand this we will need to look at how two programs interact.
 <!-- Show example of source code importing a module -->
 
 ---v
+
+The manner in which two compiled (binary) modules/programs interact forms an Application Binary Interface
+(ABI).
 
 > The compiled version of an API is what is known as the ABI (Application Binary Interface). An ABI is how
 > two binary program modules (ie. compiled source code) interact with each other. The ABI is usually defined

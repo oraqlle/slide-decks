@@ -11,7 +11,7 @@
 		<link rel="stylesheet" href="dist/theme/dracula.css">
 
 		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<link rel="stylesheet" href="plugin/highlight/monokai-pro-filter-spectrum.css">
 	</head>
 	<body>
 		<div class="reveal">
@@ -143,15 +143,339 @@
                     </section>
                 </section>
 
+                <!-- Small Notes -->
+                <section id="Small Notes">
+                    <h2>Some Small Notes</h2>
+    
+                    <p class="fragment">
+                        Throughout these slides I will be using C++23's <code>std::print</code> and <code>std::println</code>
+                        functions. These are not widely available in compilers yet but there are mirror versions available
+                        from the <a href="https://fmt.dev">{fmt}</a> library.
+                    </p>
+    
+                    <p class="fragment">
+                        In some slides you might see
+
+                        "See it on Godbolt ⚡:"
+                        
+                        followed by a link. These take you to an
+                        online compiler instance setup to run the example which run in your browser!
+                    </p>
+                </section>
+
                 <!-- Basic aggregate data structures -->
-                <section id="Aggregate Data">
-                    <h2>Basic Data Aggregations</h2>
+                <section id="Aggregate Data" data-auto-animate>
+                    <h2>Aggregate Data</h2>
+                </section>
+
+                <section data-auto-animate>
+                    <h2>Aggregate Data</h2>
+                        
+                    <p>
+                        We can introduce a new POD/aggregate type using the <code>struct</code> or <code>class</code> keywords.
+                    </p>
+
+                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
+                        struct A {
+                            // ... details of the type
+                        };
+                    </code></pre>
+
+                    <aside class="notes">
+                        First we will look at how to build the basic structures in C++. These are known as aggregates
+                        and they are just an amalgamation of data. We can declared them with the `struct` or `class`
+                        keywords.
+
+                        We won't use the `class` keyword for now due to it having some different default access
+                        permissions to `struct` which will be discussed [later](#access-control).
+                    </aside>
+                </section>
+
+                <section data-auto-animate>
+                    <h2>Aggregate Data</h2>
+
+                    <p>
+                        To add data to the type we simply declare some member variables without an initial value.
+                    </p>
+
+                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
+                        struct A {
+                            char chr;
+                            int num;
+                            float dec;
+                        };
+                    </code></pre>
+                </section>
+
+                <section data-auto-animate>
+                    <h2>Aggregate Data</h2>
+
+                    <p>
+                        We can initialise the aggregate structure using
+                        <a href="https://en.cppreference.com/w/cpp/language/aggregate_initialization">aggregate initialisation</a>
+                        with <a href="https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers">designated initializers</a>.
+                    </p>
+                        
+                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
+                        struct A {
+                            char chr;
+                            int num;
+                            float dec;
+                        };
+
+                        auto main() -> int {
+
+                            auto const a = A { .chr = 'a', .num = 123, .dec = 3.14f };
+                        
+                            return 0;
+                        }
+                    </code></pre>
+                </section>
+
+                <section data-auto-animate>
+                    <h2>Aggregate Data</h2>
+
+                    <p style="font-size: xx-large;">
+                        Members can be access using the <code>obj.var</code> syntax.
+                    </p>
+                        
+                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
+                        struct A {
+                            char chr;
+                            int num;
+                            float dec;
+                        };
+                        
+                        auto main() -> int {
+                        
+                            auto const a = A { .chr = 'a', .num = 123, .dec = 3.14f };
+                        
+                            // Reads data stored in members.
+                            std::println("{}", a.chr);  // a
+                            std::println("{}", a.num);  // 123
+                            std::println("{}", a.dec);  // 3.14
+                        
+                            return 0;
+                        }
+                    </code></pre>
+
+                    <p class="fragment" style="font-size: large;">
+                        See it on Godbolt ⚡: <a href="https://godbolt.org/z/MnGraPs8P">https://godbolt.org/z/MnGraPs8P</a>
+                    </p>
+                </section>
+
+                <section data-auto-animate>
+                    <p>
+                        So how does this look in memory? What shape does the compiler give our structure?
+                    </p>
                 </section>
 
                 <!-- Data layouts in C++ -->
-                <section id="Data Layout">
+                <section id="Data Layout" data-auto-animate>
                     <h2>Data Layout</h2>
                 </section>
+
+                <section data-auto-animate>
+                    <h2>Data Layout</h2>
+
+                    <p>
+                        C++ will generally compact the all the data of a type close together.
+                    </p>
+                        
+                    <!-- Diagram of structures layout -->
+
+                    <aside class="notes">
+                        In C++, structures will (generally) have their members located right next to each other
+                        in memory making the structure very compact. Which is part of C++'s goal for Zero Cost
+                        Abstraction meaning what you don't use you don't pay for.
+                    </aside>
+                </section>
+
+                <section data-auto-animate>
+                    <section data-auto-animate>
+                        <h2>Data Layout</h2>
+
+                        <p style="font-size: xx-large;">
+                            As we can see our structure only takes of up as much space as the sum of the sizes of its
+                            members...
+                        </p>
+                            
+                        <!-- New diagram with animation showing the size of members and total size -->
+
+                        <p class="fragment" style="font-size: xx-large;">
+                            ...almost. If we actually check this on <a href="https://godbolt.org/z/5hEfeaTK9">Godbolt</a>
+                            using the <code>sizeof</code> operator we can see that our structures size is 12 bytes, not
+                            9 bytes. Why has the compiler made <code>A</code> 3 bytes larger than it needs to be?
+                        </p>
+
+                        <!-- Take questions -->
+                    </section>
+
+                    <section>
+                        <h3>Padding</h3>
+                        
+                        <p>
+                            In some situations the compiler may add empty bytes; known as padding, around member variables
+                            of a structure so that it is <i>"byte aligned"</i> or <i>"naturally aligned"</i>. This is done
+                            to help optimises the CPU's ability to read and write to the address the member is located at.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>Natural Alignment</h4>
+                        
+                        <p style="font-size: xx-large;">
+                            <i>Natural Alignment</i> means that a objects' starting memory address is a multiple of its size
+                            in bytes.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>Natural Alignment</h4>
+                        
+                        <p style="font-size: xx-large;">
+                            The CPU will always accesses memory by a single memory word at a time. Let's see how padding affects
+                            how the CPU accesses memory when reading in a fixed size word with our <code>A</code> type.
+                        </p>
+
+                        <!-- auto-slide sections showing CPU reading memory one word at a time with svg's -->
+
+                        <aside class="notes">
+                            This means that the largest primitive data type supported by the computer must be able to fit into the
+                            size of a memory word otherwise the CPU would have to access a single data type in chunks causing the
+                            CPU to have to coordinate between two memory pages. Luckily most, if not all systems behave have a memory
+                            word size that is at least as large as its largest supported primitive type.
+
+                            However, when dealing structured data we often have data with different sizes. If they are packed
+                            tightly together, the memory can become misaligned resulting in the split memory access issues mention
+                            before. We can see this in our `A` type.
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>CPU Memory Access (Packed Data)</h4>
+                        
+                        <p style="font-size: xx-large;">
+                            Misaligned memory causes the CPU to fetch partial data meaning it need to find the missing data.
+                        </p>
+
+                        <!-- diagram of retrieved memory and how data has been left out using auto-slide and svgs -->
+
+                        <aside class="notes">
+                            Let's say we want to access each member of an instance of `A` and the members are packed right next to
+                            each other. First the CPU with fetch the first full memory word size (assumed to be 64-bits or 8 bytes)
+                            which will retrieve all of `chr`, `num` and only 3 bytes of `dec`, losing the rest. In order to operate
+                            on `dec` the CPU would have to verify if the remaining bytes are available in its cache; as it may have
+                            been lost along, retrieve them if they are not; performing a full RAM access request which is very costly
+                            when you have the rest of the data ready, and combine it with the existing data of `dec`. This would
+                            require lots of complex circuitry to achieve.
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>CPU Memory Access (Padded Data)</h4>
+
+                        <p style="font-size: xx-large;">
+                            The compiler will add 3 bytes of padding after <code>chr</code> so that <code>dec</code> is naturally
+                            aligned on the 32-bit boundary.
+                        </p>
+
+                        <!-- True structure diagram with auto-anim shift (2 slides) -->
+
+                        <aside class="notes">
+                            Instead, compilers will add padding so that certain datums start at some power-of-2 memory address
+                            boundary. In this case, the compiler add 3 bytes of padding after `chr` so that any data for the member
+                            `dec` is pushed out of the memory word containing `chr` and `num` which means the data of `dec` is not
+                            split across memory words. This makes `num` now live on the 32-bit boundary line and `dec` on the
+                            64-bit boundary line.
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>CPU Memory Access (Padded Data)</h4>
+
+                        <p style="font-size: xx-large;">
+                            Now the CPU has a much easier time access memory correctly.
+                        </p>
+
+                        <!-- diagram of retrieved memory and how data isn't being left out anymore using auto-slide and svgs -->
+
+                        <aside class="notes">
+                            This dramatically reduced the logic the CPU needs to perform as it simply just fetches performs
+                            another access to the needed datum (`dec`) and it can guarantee it will all be there. This is
+                            a common theme in the relationship between software and hardware. Often by making certain things
+                            true to the benefit of the hardwares design we can dramatically improve the performance of our
+                            software.
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h3>Application Binary Interface</h3>
+                        
+                        <p>
+                            But how does the compiler <i>know</i> what shape to give a programming language's types and structures in memory?
+                            To understand this we will need to look at how two programs interact.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h3>Application Binary Interface</h3>
+
+                        <h4>API's</h4>
+                        
+                        <p>
+                            The symbols you use from other modules form an Application Programming Interface (API) between your source
+                            code and the other module.
+                        </p>
+
+                        <!-- Show example of source code importing a module -->
+
+                        <aside class="notes">
+                            When building a library you will often expose certain *symbols* which can be used in the source code of a
+                            dependant program or library. The signature of these symbols; along with the semantics imposed by the
+                            language these two programs are written in, creating the interface in which these two source code program
+                            modules can interact with each other. This is know as an API (Application Programming Interface).
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h3>Application Binary Interface</h3>
+
+                        <p>
+                            The manner in which two compiled (binary) modules/programs interact forms an Application Binary Interface
+                            (ABI).
+                        </p>
+
+                        <!-- Show example of exe interacting with .so or other lib -->
+
+                        <aside class="notes">
+                            The compiled version of an API is what is known as the ABI (Application Binary Interface). An ABI is how
+                            two binary program modules (ie. compiled source code) interact with each other. The ABI is usually defined
+                            and implemented by compilers and describes how function/subroutines are executed, how types and structures
+                            get mapped to memory etc. in a systems machine code.
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h3>Application Binary Interface</h3>
+
+                        <!-- Some diagram, not sure yet -->
+
+                        <aside class="notes">
+                            Therefore, how structures are mapped onto memory is described by the systems ABI such that different binary
+                            program modules can communicate and understand each other. This is essential because it is what allows your
+                            programs to interact with your Operating System (OS) which is how it is able to execute!
+                        </aside>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            Now that we have looked at some of the machine level details of C++'s structures lets move
+                            back into some more language level constructs.
+                        </p>
+                    </section>
+                </section>
+
 
                 <!-- Access Control -->
                 <section id="Access Control">
