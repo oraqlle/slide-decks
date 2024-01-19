@@ -21,7 +21,10 @@ useful.
       - [Natural Alignment](#natural-alignment)
     - [Application Binary Interface](#application-binary-interface)
   - [Access Control](#access-control)
-  - [Defining Operations on Custom types](#defining-operations-on-custom-types)
+  - [Defining Operations on Types](#defining-operations-on-types)
+    - [Constant Operations](#constant-operations)
+    - [Operator Overloading](#operator-overloading)
+    - [Friend Functions](#friend-functions)
   - [Handling Resources](#handling-resources)
     - [RAII](#raii)
     - [Constructors and Destructors](#constructors-and-destructors)
@@ -374,10 +377,10 @@ We will look at the first two columns in more detail when discussing [virtual po
 ---v
 
 Types declared with the `struct` keyword will have the `public` modifier applied to the
-whole class by default.
+whole type by default.
 
 Types declared with the `class` keyword will have the `private` modifier applied to the
-whole class by default.
+whole type by default.
 
 This is the only difference between the `class` and `struct` keyword in C++.
 
@@ -409,15 +412,298 @@ auto main() -> int {
 
     return 0;
 }
-
 ```
 
 <!-- fragment -->
 See it on Godbolt ⚡: <https://godbolt.org/z/fW5xKPoEY>
 
-## Defining Operations on Custom types
+## Defining Operations on Types
 
-~
+> But if we hide members of our structure how are we able to access them? This is where defining member
+> functions (methods) come into play. Members are special functions that are bound to our type. To define
+> a method for a type we simply declare the function and its definition within the types own definition
+> exactly the same as member variables.
+
+```cxx
+struct A {
+private:
+    char chr = 'a';
+    int num = 123;
+    float dec = 3.14f;
+
+public:
+    auto to_string() -> std::string {
+        return "todo...";
+    }
+};
+```
+
+--->
+
+We can call the method on instance of `A` by using the `.` (member access) operator.
+
+```cxx
+struct A {
+private:
+    char chr = 'a';
+    int num = 123;
+    float dec = 3.14f;
+
+public:
+    auto to_string() -> std::string {
+        return "todo...";
+    }
+};
+
+auto main() -> int {
+
+    auto a = A { };
+
+    std::println("{}", a.to_string());  // todo...
+
+    return 0;
+}
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/4Yebv5bv8>
+
+--->
+
+But why do we have to access `to_string()` through the `.` operator? The `.` operator allows the method to
+access the internals of the type, even private members. Implicitly all methods are defined to take a hidden
+first parameter. This hidden parameter is a pointer to the actual object in memory of which is an instance
+of the type the method was declared on called `this`.
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    auto to_string(A* this) -> std::string {
+        return "todo...";
+    }
+};
+```
+
+--->
+
+This is because C++ does not store the instructions in the **.data** portion of the resulting executable ie.
+not with constant, static and stack variables but rather in the **.text** section of the executable alongside
+the rest of the programs instructions.
+
+<!-- Diagram of ELF file layout -->
+
+--->
+
+As such a method needs to be able to access the other data and members
+associated with type which is achieved by taking the address of the object and passing that to the method as
+its first parameter. We can see this effect illustrated by making `to_string()` a free function and passing
+a `A*` to it.
+
+```cxx
+struct A {
+    char chr = 'a';
+    int num = 123;
+    float dec = 3.14f;
+};
+
+auto to_string(A* this) -> std::string {
+    return "todo...";
+}
+
+auto main () -> {
+    auto a = A { };
+
+    std::println("{}", to_string(&a))
+}
+```
+
+--->
+
+Since `this` is a pointer we can access any members using regular pointer operators like `*` and `->`. We
+can also omit `this` in contexts where there is no naming conflict.
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    auto to_string() -> std::string {
+        return std::format("{{ .chr = '{}', .num = {}, .dec = {:.2f} }}", this->chr, (*this).num, dec)
+    }
+};
+
+auto main() -> int {
+
+    auto a = A { };
+
+    fmt::println("{}", a.to_string());
+
+    return 0;
+}
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/ne87489bK>
+
+--->
+
+### Constant Operations
+
+Sometimes we want an object to be immutable however this would break the previous example. This is because
+the member `to_string()` along expects to take a first argument of type `A*` not `const A*`. Passing a
+constant variable to a non constant-accepting parameter cause us to discard the qualifiers (`const`) from
+the object which would make it mutable.
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    auto to_string() -> std::string {
+        return std::format("{{ .chr = '{}', .num = {}, .dec = {:.2f} }}", this->chr, (*this).num, dec)
+    }
+};
+
+auto main() -> int {
+
+    auto a const = A { };
+
+    fmt::println("{}", a.to_string());  // error: passing 'const A' as 'this' argument discards qualifiers
+
+    return 0;
+}
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/K3PGaG4ee>
+
+---v
+
+But this should work because we know `A::to_string()` doesn't modify `a` internals. Luckily we can mark such
+functions that are constant as `const` to the compiler so they work with immutable instances of the type. This
+also works with mutable variables as C++ is able to promote them to `const` for the scope of the method.
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    // added const after function name and parameters...
+    //       ...here vvvvv
+    auto to_string() const -> std::string { /* ... */ }
+};
+
+auto main() -> int {
+
+    auto const a = A { };
+    auto a2 = A { };
+
+    fmt::println("{}", a.to_string());  // works
+    fmt::println("{}", a2.to_string());  // also works
+
+    return 0;
+}
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/hEE178Pje>
+
+---v
+
+In essence this simple makes the hidden `this` parameter of type `const A*` instead of `A*`.
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    auto to_string(const A* this) -> std::string {
+        return std::format("{{ .chr = '{}', .num = {}, .dec = {:.2f} }}", this->chr, (*this).num, dec)
+    }
+};
+```
+
+### Operator Overloading
+
+We can also overload C++'s operators for custom types. This works similar to regular operator
+overloading however, as we've seen with other methods, the first argument is the `this` pointer
+to the type's object in memory. This means that you only have to define the RHS argument.
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    auto to_string() const -> std::string { /* ... */ }
+
+    auto operator+ (A const& rhs) const -> A {
+        auto result = A { };
+        result.num = this->num + rhs.num;
+        result.dec = this->dec + rhs.dec;
+        return result;
+    }
+};
+
+auto main() -> int {
+
+    auto const a1 = A { };
+    auto const a2 = A { };
+    auto const a3 = a1 + a2;
+
+    fmt::println("{}", a1.to_string());
+    fmt::println("{}", a2.to_string());
+    fmt::println("{}", a3.to_string());
+
+    return 0;
+}
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/hxKfe4P8K>
+
+### Friend Functions
+
+Sometime we need external types and functions to have access to the internals of our type even
+if they are unrelated. This is where friend functions and classes come in. For example, we
+can only overload operators on a type such that the type is always the LHS argument. What if
+we need an object of a different type to be on LHS? We can make a friend function inside the
+our type!
+
+```cxx
+struct A {
+
+    // member details...
+
+public:
+    auto to_string() const -> std::string { /* ... */ }
+
+    friend auto operator< (int const& lhs, A const& rhs) -> bool {
+        return lhs < rhs.num;
+    }
+};
+
+auto main() -> int {
+
+    auto const a = A { };
+
+    fmt::println("123 < a is {}", 123 < a);
+    fmt::println("111 < a is {}", 111 < a);
+    fmt::println("200 < a is {}", 200 < a);
+
+    return 0;
+}
+```
+
+<!-- fragment -->
+See it on Godbolt ⚡: <https://godbolt.org/z/xYP3Gszxz>
 
 ## Handling Resources
 
