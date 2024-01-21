@@ -1,0 +1,123 @@
+/*
+Monokai Pro (Filter) Spectrum style - ported by Tyler Swann
+*/
+
+/* Highlight.js */
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #272822;
+  color: #ddd;
+}
+
+/* General Purpose */
+
+.hljs-keyword {
+    color: #fc618d;
+}
+
+.hljs-built_in {
+    color: #5ad4e6;
+}
+
+.hljs-type {
+    color: #5ad4e6;
+}
+
+.hljs-literal {
+    color: #948ae3;
+}
+
+.hljs-number {
+    color: #948ae3;
+}
+
+.hljs-operator {
+    color: #fc618d;
+}
+
+.hljs-punctuation {
+    color: #8b888f;
+}
+
+.hljs-property {
+    color: #f7f1ff;
+}
+
+.hljs-regexp {
+    color: #8b888f;
+}
+
+.hljs-string {
+    color: #8b888f;
+}
+
+.hljs-char.escape {
+    color: #948ae3;
+}
+
+.hljs-subst {
+    color: #fce553;
+}
+
+.hljs-symbol {
+    color: #fc618d;
+}
+
+.hljs-variable {
+    color: #f7f1ff;
+}
+
+.hljs-variable.language {
+    color: #bab6c0;
+}
+
+.hljs-variable.constant {
+    color: #5ad4e6;
+}
+
+.hljs-title {
+    color: #5ad4e6;
+}
+	
+
+.hljs-title.class {
+    color: #5ad4e6;
+}
+
+.hljs-title.class.inherited {
+    color: #5ad4e6;
+}
+
+.hljs-title.function {
+    color: #7bd88f;
+}
+
+.hljs-title.function.invoke {
+    color: #7bd88f;
+}
+
+.hljs-params {
+    color: #fd9353;
+}
+
+.hljs-comment {
+    color: #69676c;
+    font-style: italic;
+}
+
+.hljs-doctag {
+    color: #fd9353;
+}
+
+/* Meta */
+
+.hljs-meta {
+    color: #8b888f;
+}
+
+.hljs-meta.hljs-keyword {
+    color: #5ad4e6;
+}	

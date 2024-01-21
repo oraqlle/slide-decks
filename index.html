@@ -8,10 +8,14 @@
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/dracula.css">
+		<link rel="stylesheet" href="dist/theme/night-alt.css">
 
 		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="node_modules/@catppuccin/highlightjs/css/catppuccin-frappe.css">
+		<!-- <link rel="stylesheet" href="node_modules/@catppuccin/highlightjs/css/catppuccin-mocha.css"> -->
+		<link rel="stylesheet" href="plugin/highlight/catppuccin-mocha-alt.css">
+
+        <!-- Used for putting headings in the top left corner -->
+        <link rel="stylesheet" href="css/custom/special-headers.css">
 	</head>
 	<body>
 		<div class="reveal">
@@ -19,131 +23,31 @@
 
                 <!-- Title slide -->
 				<section 
-                        data-markdown="script/title.md"
-                        data-separator="^\r?\n===\r?\n"
-                        data-separator-vertical="^\r?\n---\r?\n">
+                    data-markdown="script/title.md"
+                    data-separator="^\r?\n===\r?\n"
+                    data-separator-vertical="^\r?\n---\r?\n">
                 </section>
 
                 <!-- Overview of topics covered in this meetup -->
 				<section 
-                        data-markdown="script/overview.md"
-                        data-separator="^\r?\n===\r?\n"
-                        data-separator-vertical="^\r?\n---\r?\n">
+                    data-markdown="script/overview.md"
+                    data-separator="^\r?\n===\r?\n"
+                    data-separator-vertical="^\r?\n---\r?\n">
                 </section>
 
                 <!-- Definitions and terminology + Viewer Notes -->
                 <section 
-                        data-markdown="script/terminology.md"
-                        data-separator="^\r?\n===\r?\n"
-                        data-separator-vertical="^\r?\n---\r?\n">
+                    data-markdown="script/terminology.md"
+                    data-separator="^\r?\n===\r?\n"
+                    data-separator-vertical="^\r?\n---\r?\n">
                     <!-- TODO: Add drawings for each definition -->
                 </section>
 
                 <!-- Basic aggregate data structures -->
-                <section id="Aggregate Data" data-auto-animate>
-                    <h2>Aggregate Data</h2>
-                </section>
-
-                <section data-auto-animate>
-                    <h2>Aggregate Data</h2>
-                        
-                    <p>
-                        We can introduce a new POD/aggregate type using the <code>struct</code> or <code>class</code> keywords.
-                    </p>
-
-                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
-                        struct A {
-                            // ... details of the type
-                        };
-                    </code></pre>
-
-                    <aside class="notes">
-                        First we will look at how to build the basic structures in C++. These are known as aggregates
-                        and they are just an amalgamation of data. We can declared them with the `struct` or `class`
-                        keywords.
-
-                        We won't use the `class` keyword for now due to it having some different default access
-                        permissions to `struct` which will be discussed [later](#access-control).
-                    </aside>
-                </section>
-
-                <section data-auto-animate>
-                    <h2>Aggregate Data</h2>
-
-                    <p>
-                        To add data to the type we simply declare some member variables without an initial value.
-                    </p>
-
-                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
-                        struct A {
-                            char chr;
-                            int num;
-                            float dec;
-                        };
-                    </code></pre>
-                </section>
-
-                <section data-auto-animate>
-                    <h2>Aggregate Data</h2>
-
-                    <p>
-                        We can initialise the aggregate structure using
-                        <a href="https://en.cppreference.com/w/cpp/language/aggregate_initialization">aggregate initialisation</a>
-                        with <a href="https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers">designated initializers</a>.
-                    </p>
-                        
-                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
-                        struct A {
-                            char chr;
-                            int num;
-                            float dec;
-                        };
-
-                        auto main() -> int {
-
-                            auto const a = A { .chr = 'a', .num = 123, .dec = 3.14f };
-                        
-                            return 0;
-                        }
-                    </code></pre>
-                </section>
-
-                <section data-auto-animate>
-                    <h2>Aggregate Data</h2>
-
-                    <p style="font-size: xx-large;">
-                        Members can be access using the <code>obj.var</code> syntax.
-                    </p>
-                        
-                    <pre data-id="aggregate-data-code"><code class="cpp" data-trim data-noescape data-line-numbers>
-                        struct A {
-                            char chr;
-                            int num;
-                            float dec;
-                        };
-                        
-                        auto main() -> int {
-                        
-                            auto const a = A { .chr = 'a', .num = 123, .dec = 3.14f };
-                        
-                            // Reads data stored in members.
-                            std::println("{}", a.chr);  // a
-                            std::println("{}", a.num);  // 123
-                            std::println("{}", a.dec);  // 3.14
-                        
-                            return 0;
-                        }
-                    </code></pre>
-
-                    <p class="fragment" style="font-size: large;">
-                        See it on Godbolt ⚡: <a href="https://godbolt.org/z/MnGraPs8P">https://godbolt.org/z/MnGraPs8P</a>
-                    </p>
-                </section>
-
-                <section data-auto-animate>
-                    <p>
-                        So how does this look in memory? What shape does the compiler give our structure?
-                    </p>
+                <section 
+                    data-markdown="script/aggregate-data-types/aggregate-data-types.md"
+                    data-separator="^\r?\n===\r?\n"
+                    data-separator-vertical="^\r?\n---\r?\n">
                 </section>
 
                 <!-- Data layouts in C++ -->

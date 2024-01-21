@@ -1,10 +1,6 @@
-/*
- Monokai Pro (Filter) Spectrum theme for highlight.js - ported by Tyler Swann
- */
-
 code.hljs {
   color: #cdd6f4;
-  background: #1e1e2e;
+  background: #111;
 }
 code .hljs-keyword {
   color: #cba6f7;
