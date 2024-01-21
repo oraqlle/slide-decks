@@ -313,20 +313,16 @@ code and the other module.
 The manner in which two compiled (binary) modules/programs interact forms an Application Binary Interface
 (ABI).
 
+<!-- Show example of exe interacting with .so or other lib -->
+
 > The compiled version of an API is what is known as the ABI (Application Binary Interface). An ABI is how
 > two binary program modules (ie. compiled source code) interact with each other. The ABI is usually defined
 > and implemented by compilers and describes how function/subroutines are executed, how types and structures
 > get mapped to memory etc. in a systems machine code.
-
-<!-- Show example of exe interacting with .so or other lib -->
-
----v
-
+>
 > Therefore, how structures are mapped onto memory is described by the systems ABI such that different binary
 > program modules can communicate and understand each other. This is essential because it is what allows your
 > programs to interact with your Operating System (OS) which is how it is able to execute!
-
-<!-- Some diagram, not sure yet -->
 
 <!-- ---v
 
@@ -354,66 +350,31 @@ back into some more language level constructs.
 
 ## Access Control
 
-C++ allows us to control which members can be accessed from outside the class. This is done
-with access modifier labels. These will apply to any members; data or function, below the
-label in the types definition. Access modifiers allow use to encapsulate/internalize parts
-of the type so it cannot be modified by anyone outside the type itself.
+> C++ allows us to control which members can be accessed from outside the class. This is done
+> with access modifier labels. These will apply to any members; data or function, below the
+> label in the types definition. Access modifiers allow use to encapsulate/internalize parts
+> of the type so it cannot be modified by anyone outside the type itself.
 
 --->
 
 <!-- table of rules for access modifiers -->
-<!-- <style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-</style>
-<table class="tg">
-<thead>
-  <tr>
-    <th class="tg-c3ow">Specifiers</th>
-    <th class="tg-c3ow">Same Class</th>
-    <th class="tg-c3ow">Derived Class</th>
-    <th class="tg-c3ow">Outside Class</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`public`</span></td>
-    <td class="tg-c3ow">Yes</td>
-    <td class="tg-c3ow">Yes</td>
-    <td class="tg-c3ow">Yes</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`private`</span></td>
-    <td class="tg-c3ow">Yes</td>
-    <td class="tg-c3ow">No</td>
-    <td class="tg-c3ow">No</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`protected`</span></td>
-    <td class="tg-c3ow">Yes</td>
-    <td class="tg-c3ow">Yes</td>
-    <td class="tg-c3ow">No</td>
-  </tr>
-</tbody>
-</table> -->
 
-<!-- fragment -->
-We will look at the first two columns in more detail when discussing [virtual polymorphism](#virtual-polymorphism).
-
----v
-
-Types declared with the `struct` keyword will have the `public` modifier applied to the
-whole type by default.
-
-Types declared with the `class` keyword will have the `private` modifier applied to the
-whole type by default.
-
-This is the only difference between the `class` and `struct` keyword in C++.
+> C++ has three access control labels, public, private and protected. `public` members can be
+> accessed from anyone outside the type and is used to define the API of our type. `private`
+> members are completely inaccessible to anything outside the type. `protected` labels members
+> that are private to anything outside the type except for types that are a part of the same
+> inheritance tree.
+>
+> We will look more at `protected` when we talk about virtual polymorphism.
+>
+>
+> Types declared with the `struct` keyword will have the `public` modifier applied to the
+> whole type by default.
+>
+> Types declared with the `class` keyword will have the `private` modifier applied to the
+> whole type by default.
+>
+> This is the only difference between the `class` and `struct` keyword in C++.
 
 --->
 
@@ -430,23 +391,20 @@ private:
 
 auto main() -> int {
 
-    //! We can no longer use aggregate initializer
-    //! because we've 'hidden' parts of A making
-    //! it no longer an aggregate type.
     auto a = A { };
     a.chr = 'a';
     a.num = 123;
 
     std::println("{}", a.chr);  // a
     std::println("{}", a.num);  // 123
-    // fmt::println("{}", a.dec);  //! Now fails if uncommented
+    std::println("{}", a.dec);  //! Now fails to compile
 
     return 0;
 }
 ```
 
 <!-- fragment -->
-See it on Godbolt ⚡: <https://godbolt.org/z/fW5xKPoEY>
+See it on Godbolt ⚡: <https://godbolt.org/z/6PPqn9nsW>
 
 ## Defining Operations on Types
 
