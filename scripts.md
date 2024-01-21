@@ -15,7 +15,7 @@ useful.
   - [Overview](#overview)
   - [Some Terminology](#some-terminology)
     - [Some Small Notes](#some-small-notes)
-  - [Basic Data Aggregations](#basic-data-aggregations)
+  - [Aggregate Data Types](#aggregate-data-types)
   - [Data Layout](#data-layout)
     - [Padding](#padding)
       - [Natural Alignment](#natural-alignment)
@@ -118,7 +118,7 @@ online compiler instance setup to run the example which run in your browser!
 
 ===>
 
-## Basic Data Aggregations
+## Aggregate Data Types
 
 We can introduce a new type using the <code>struct</code> or <code>class</code> keywords.
 
