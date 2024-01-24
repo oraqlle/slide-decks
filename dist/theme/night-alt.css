@@ -365,3 +365,27 @@ section.has-light-background h6 {
     background-color: var(--r-background-color);
   }
 }
+
+:root {
+  --r-bold-color: #ffb86c;
+  --r-italic-color: #f1fa8c;
+  --r-inline-code-color: #50fa7b;
+  --r-list-bullet-color: #8be9fd;
+}
+
+.reveal strong,
+.reveal b {
+  color: var(--r-bold-color);
+}
+.reveal em,
+.reveal i,
+.reveal blockquote {
+  color: var(--r-italic-color);
+}
+.reveal code {
+  color: var(--r-inline-code-color);
+}
+.reveal ul li::marker,
+.reveal ol li::marker {
+  color: var(--r-list-bullet-color);
+}
