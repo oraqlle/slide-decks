@@ -543,7 +543,7 @@ See it on Godbolt ⚡: <https://godbolt.org/z/ne87489bK>
 ### Constant Operations
 
 Sometimes we want an object to be immutable however this would break the previous example. This is because
-the member `to_string()` along expects to take a first argument of type `A*` not `const A*`. Passing a
+the member `to_string()` alone expects to take a first argument of type `A*` not `const A*`. Passing a
 constant variable to a non constant-accepting parameter cause us to discard the qualifiers (`const`) from
 the object which would make it mutable.
 
@@ -605,7 +605,7 @@ See it on Godbolt ⚡: <https://godbolt.org/z/hEE178Pje>
 
 ---v
 
-In essence this simple makes the hidden `this` parameter of type `const A*` instead of `A*`.
+In essence this simply makes the hidden `this` parameter of type `const A*` instead of `A*`.
 
 ```cxx
 struct A {

@@ -84,4 +84,4 @@ auto main() -> int {
 
 <span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/6PPqn9nsW">https://godbolt.org/z/6PPqn9nsW</a></span>
 
-notes: Let's modify our `A` type from earlier by making `A::dec` private. We now get a compiler error on line 17 stating `'float A::dec' is private within this context`. Notice that we also can no longer use Aggregate Initialisation (w/wout Designated Initialisers) as we can't even access `A::dec` to initialise it! (Don't worry, we can fix this later).
+notes: Let's modify our `A` type from earlier by making `A::dec` private. We now get a compiler error on line 17 stating `'float A::dec' is private within this context`. Notice that we also can no longer use Aggregate Initialisation (w/wout Designated Initialisers) as we can't even access `A::dec` to initialise it! (Don't worry, we can fix this later).<br><br>But if we hide members of our structure how are we able to access them? This is where defining operations or member functions (methods) are useful.
