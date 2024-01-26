@@ -2,17 +2,17 @@
 
 ## Overview
 
-- Terminology <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-- Aggregate Data Types <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-- Data Layout <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-- Access Control <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+- Terminology<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+- Aggregate Data Types<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+- Data Layout<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+- Access Control<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
 - Defining Operations on Custom Types <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-- Handling Resources <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-  - RAII <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-  - Constructors and Destructors <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-- Polymorphism <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-  - Parametric Polymorphism <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-  - Virtual Polymorphism <!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+- Handling Resources<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+  - RAII<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+  - Constructors and Destructors<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+- Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+  - Parametric Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+  - Virtual Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
 <!-- - Static Storage Duration -->
 
 notes: During this meetup we will be discussing how to define our own types in C++ using classes
