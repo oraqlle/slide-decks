@@ -166,7 +166,7 @@ notes: It is important to note that references in C++ cannot be rebound, if you 
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/1 data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/1" data-auto-animate -->
 
 ##### Pointer Semantics
 
@@ -192,7 +192,7 @@ notes: Pointers allow us to achieve reference semantics as well however pointers
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/2 data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/2" data-auto-animate -->
 
 ##### Pointer Semantics
 
@@ -218,7 +218,7 @@ notes: Unlike references, pointers can be rebound to store a different address. 
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics" data-auto-animate -->
 
 ##### Move Semantics
 
@@ -238,29 +238,478 @@ notes: Unlike references, pointers can be rebound to store a different address. 
 
 notes: Compared to reference and pointer semantics; which are used to share a resource, move semantics use used when we wish to transfer ownership of a resource. In this example we have constructed a string `x`. We then transfer or *move* ownership of any resources; in this case memory and data, from `x` to `y` and observe that now `y` owns that data previously found in `x` and with `x` itself is empty.
 
----
-
 ===
+
+<!-- .slide: id="handling-resources/constructors-and-destructors" -->
 
 ### Constructors and Destructors
 
+notes: So how to we implement RAII for our own types? All types have two sets of special member functions that are invoked when an object of a given type is created and destroyed. These are known as constructors and destructors respectively.
+
 ---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors" -->
 
 #### Constructors
 
-<!-- - Syntax
-  - Base
-    - Special function
-    - Parameters
-    - Body
-  - Initialiser List
-- Explicit Constructor (Parameter constructor)
-- Copy and Move Constructors
-- Copy and Move Assignments -->
+```cpp
+                    name_of_type(T1 p1, T2 p2...) {
+                        /* ... constructor body ... */
+                    }
+```
+
+notes: The signature of a constructor is a function with the same signature as the type itself and has no return syntax.
 
 ---
 
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/default-constructor" data-auto-animate -->
+
+##### Default Constructor
+
+```cpp [1: 4-9|21,23,24]
+struct A {
+public:
+
+    A()
+    {
+        this->chr = char {};
+        this->num = int {};
+        this->dec = float {};
+    }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto const a = A { };
+
+    fmt::println("{}", a.to_string());
+    // { .chr = '', .num = 0, .dec = 0.00 }
+
+    return 0;
+}
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/Y8Mj5Y1YG">https://godbolt.org/z/Y8Mj5Y1YG</a></span>
+
+notes: The most common constructor is the default constructor. This is a constructor that takes no arguments and is used to initialise a type in it's default state. The body of the default constructor is usually used to either default initialise the data members of the type or give a default initial value to said members if they cannot themselves be default constructed or the requirements of the members details different defaults. Default constructors are implicitly declared for all types however, they will not default initialise members. This example showcases a default constructor for our `A` type.
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/converting-constructor" data-auto-animate -->
+
+##### Converting Constructor
+
+```cpp [1: 11-16|28-29|31-32,34-35]
+struct A {
+public:
+
+    A()
+    {
+        this->chr = char {};
+        this->num = int {};
+        this->dec = float {};
+    }
+
+    A(char chr, int num, float dec)
+    { 
+        this->chr = chr;
+        this->num = num;
+        this->dec = dec;
+    }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto const a = A { 'a', 123, 3.14f };
+    auto const b = A { 'b', 456, 6.28f };
+
+    fmt::println("{}", a.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    fmt::println("{}", b.to_string());
+    // { .chr = 'b', .num = 456, .dec = 6.28 }
+
+    return 0;
+}
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/a3YrW9h9z">https://godbolt.org/z/a3YrW9h9z</a></span>
+
+notes: You may notice that we still cannot edit our types members, even when it is constructed. This isn't really desireable as we want users to be able to express lot's of different values with our type. To allow our type to be constructed with different values for it's data members we can define a Converting Constructor. These are constructors that usually take some arbitrary number of parameters that are used to directly construct the type. In our case we take three arguments for each of `A` data members and use these values to directly initialise our members.
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/constructor-initialiser-lists" data-auto-animate -->
+
+###### Constructor Initialiser Lists
+
+```cpp [1: 4-6,8-10|5,9]
+struct A {
+public:
+
+    A()
+    : chr {}, num {}, dec {}
+    { }
+
+    A(char chr, int num, float dec)
+    : chr { chr }, num { num }, dec { dec }
+    { }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto const a = A { 'a', 123, 3.14f };
+    auto const b = A { 'b', 456, 6.28f };
+
+    fmt::println("{}", a.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    fmt::println("{}", b.to_string());
+    // { .chr = 'b', .num = 456, .dec = 6.28 }
+
+    return 0;
+}
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/nno15dGGd">https://godbolt.org/z/nno15dGGd</a></span>
+
+notes: Because initialising members is such a common task of constructors, C++ offers a special syntax known as *member initialiser lists* that allows us to initialise data members more directly. Note you can still perform computation with the constructor body when using member initialiser lists eg. you may initialise a member with a dummy value in the member initialiser list and then do some post processing in the constructor body to set the correct initial value.
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/copy-constructors" data-auto-animate -->
+
+##### Copy Constructor
+
+```cpp [1: 12-16|28-29|31-32,34-35]
+struct A {
+public:
+
+    A()
+    : chr {}, num {}, dec {}
+    { }
+
+    A(char chr, int num, float dec)
+    : chr { chr }, num { num }, dec { dec }
+    { }
+
+    A(A const& other)
+    : chr { other.chr }
+    , num { other.num }
+    , dec { other.dec }
+    { }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto const a = A { 'a', 123, 3.14f };
+    auto const b = A { a };  // Invokes copy constructor
+
+    fmt::println("{}", a.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    fmt::println("{}", b.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    return 0;
+}
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/1ar7TEfE1">https://godbolt.org/z/1ar7TEfE1</a></span>
+
+notes: But what if we want to copy the data from one object to another. Which constructor get's invoked? None of the ones we have declared thus far. We need to denote a new constructor with particular semantics to denote we want a copy. What argument could we pass to a constructor that could only mean we want to copy the data of the other object? A constant reference to `A` would do the trick. We cannot modify a constant and we aren't using a copy to read the `A` but instead a reference. Using `const` also means non-constant objects can also be copied as they are promoted to constant for the duration of the constructor.
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/move-constructors" data-auto-animate -->
+
+##### Move Constructor
+
+```cpp [1: 18-26|38-41|43-49]
+struct A {
+public:
+
+    A()
+    : chr {}, num {}, dec {}
+    { }
+
+    A(char chr, int num, float dec)
+    : chr { chr }, num { num }, dec { dec }
+    { }
+
+    A(const A& other)
+    : chr { other.chr }
+    , num { other.num }
+    , dec { other.dec }
+    { }
+
+    A(A&& other)
+    : chr { std::move(other.chr) }
+    , num { std::move(other.num) }
+    , dec { std::move(other.dec) }
+    {
+        other.chr = char { }
+        other.num = int { }
+        other.dec = float { }
+    }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto a = A { 'a', 123, 3.14f };
+
+    fmt::println("{}", a.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    auto const b = A { std::move(a) };  // Invokes move constructor
+
+    fmt::println("{}", a.to_string());
+    // { .chr = '', .num = 0, .dec = 0.00 }
+
+    fmt::println("{}", b.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    return 0;
+}
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/T8a8bnovW">https://godbolt.org/z/T8a8bnovW</a></span>
+
+notes: What about those move semantics you were talking about earlier, how do I get those? Well using another constructor that semantically means to move ownership of data. This constructor is declared with an argument of type `A&&` which denotes an rvalue reference. Rvalue references are, well, references to values we do not care about, ie. temporary values or objects we do not care about anymore, usually because we are transferring ownership of it's data to another object. Creating a rvalue reference is the job of the `std::move()` free function. Note that we have to make the object `a` non-const so that we can access the move constructor. A constant object is not allowed to be moved as this could mean mutating it which `const` forbids (look at move ctor signature).
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/copy-and-move-assignments" data-auto-animate -->
+
+##### Copy and Move Assignments
+
+```cpp [1: 28-36|38-50|64-70|72-78]
+struct A {
+public:
+
+    A()
+    : chr {}, num {}, dec {}
+    { }
+
+    A(char chr, int num, float dec)
+    : chr { chr }, num { num }, dec { dec }
+    { }
+
+    A(const A& other)
+    : chr { other.chr }
+    , num { other.num }
+    , dec { other.dec }
+    { }
+
+    A(A&& other)
+    : chr { std::move(other.chr) }
+    , num { std::move(other.num) }
+    , dec { std::move(other.dec) }
+    {
+        other.chr = char { }
+        other.num = int { }
+        other.dec = float { }
+    }
+
+    auto operator= (A const& other) -> A& {
+        if (*this != other) {
+            this->chr = other.chr;
+            this->num = other.num;
+            this->dec = other.dec;
+        }
+
+        return *this;
+    }
+
+    auto operator= (A&& other) -> A& {
+        if (*this != other) {
+            this->chr = std::move(other.chr);
+            this->num = std::move(other.num);
+            this->dec = std::move(other.dec);
+
+            other.chr = char { };
+            other.num = int { };
+            other.dec = float { };
+        }
+
+        return *this;
+    }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+    friend auto operator== (A const& a, A const& b) -> bool { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+
+auto main() -> int {
+
+    auto a = A { 'a', 123, 3.14f };
+    auto const b = a;  // Invokes copy assignment
+
+    fmt::println("{}", a.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+    fmt::println("{}", b.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    auto const c = std::move(a);  // Invokes move constructor
+
+    fmt::println("{}", a.to_string());
+    // { .chr = '', .num = 0, .dec = 0.00 }
+
+    fmt::println("{}", c.to_string());
+    // { .chr = 'a', .num = 123, .dec = 3.14 }
+
+    return 0;
+}
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/cTv5MzPMe">https://godbolt.org/z/cTv5MzPMe</a></span>
+
+notes: The final two constructors we want to define are the copy and move assignment operator overloads. These are technically just regular operator overloads but they are almost always used just to initialise an object. The signature of these functions are slightly different to the constructors, namely they require return syntax, unlike constructors but the signatures of the arguments are the same as the copy and move constructors respectively. Note that we want to ensure we are not assigning to ourselves (which would be a no-op) so we must check that our argument is not `this`. In order to do this, we must define the equality operator (`==`).
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/constructors/letting-the-compiler-do-the-work" data-auto-animate -->
+
+##### Letting the Compiler Do The Work
+
+```cpp [1: 4-5|21-22|7-9|11-19|11-19,22]
+struct A {
+public:
+
+    A() = default;
+    A(const A& other) = default;
+
+    A(char chr, int num, float dec)
+    : chr { chr }, num { num }, dec { dec }
+    { }
+
+    A(A&& other)
+    : chr { std::move(other.chr) }
+    , num { std::move(other.num) }
+    , dec { std::move(other.dec) }
+    {
+        other.chr = char { }
+        other.num = int { }
+        other.dec = float { }
+    }
+
+    auto operator= (A const& other) -> A& = default;
+    auto operator= (A&& other) -> A& = default;
+
+    auto to_string() const -> std::string { /* ... */ }
+
+    friend auto operator== (A const& a, A const& b) -> bool { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+```
+<!-- .element: data-id="constructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/YEs81fjYn">https://godbolt.org/z/YEs81fjYn</a></span>
+
+notes: Woah, that is a lot of constructors. Do we really have to write them for every type we create?! No, C++ allows us to tell the compiler to generate constructors for us. This can be particular useful when dealing with very basic structures like our `A` type. We can even do it for our assignment operators! Note that conversion constructors cannot be *defaulted* and if we wan to retain the behaviour that moves zero out our data members for `A` then we have to keep the move constructor as primitives in C++ will copy as a move due to not having true move constructors. We can still default the move assignment as it will fall back on the move constructors definition.
+
+---
+
+<!-- .slide: id="handling-resources/constructors-and-destructors/destructors" -->
+
 #### Destructors
+
+```cpp [1: 24-29]
+struct A {
+public:
+
+    A() = default;
+    A(const A& other) = default;
+
+    A(char chr, int num, float dec)
+    : chr { chr }, num { num }, dec { dec }
+    { }
+
+    A(A&& other)
+    : chr { std::move(other.chr) }
+    , num { std::move(other.num) }
+    , dec { std::move(other.dec) }
+    {
+        other.chr = char { }
+        other.num = int { }
+        other.dec = float { }
+    }
+
+    auto operator= (A const& other) -> A& = default;
+    auto operator= (A&& other) -> A& = default;
+
+    ~A()
+    {
+        this->dec = float { };
+        this->num = int { };
+        this->chr = char { };
+    }
+
+    auto to_string() const -> std::string { /* ... */ }
+
+    friend auto operator== (A const& a, A const& b) -> bool { /* ... */ }
+
+private:
+    char chr;
+    int num;
+    float dec;
+};
+```
+<!-- .element: data-id="destructors-ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/zP47besjE">https://godbolt.org/z/zP47besjE</a></span>
+
+notes: Destructors are much more simple compared to constructors as their is only one for every type. While constructors specify how to initialise a type and acquire resources, destructors specify how to destroy and free resources. Destructors are specified by a function with the same name as the type, prefixed with a tilde (~). Destructors can be defaulted or have a body that specifies what exactly should happen when a object is destroyed. A destructor is automatically called when an object goes out of scope and will call the destructors of all data members in the reverse order they we're declared/initialised in, meaning you should never have to call a destructor manually. In the example I am explicitly zero-ing the memory that stored an `A` data members as primitives don't have destructors (zero-ed memory is easier for the system to track as unused and primitives aren't defined to zero themselves, they can but it is not guaranteed).
 
 <!-- - Syntax
 - Do not throw from a constructor! -->
