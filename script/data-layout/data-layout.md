@@ -1,12 +1,12 @@
-<!-- .slide: id="Data Layout" data-auto-animate -->
+<!-- .slide: id="data-layout/1" data-auto-animate -->
 
-## Data Layout <!-- .element: data-id="Data Layout Title" -->
+## Data Layout <!-- .element: data-id="data-layout-title" -->
 
 ===
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/2" data-auto-animate -->
 
-## Data Layout <!-- .element: data-id="Data Layout Title" -->
+## Data Layout <!-- .element: data-id="data-layout-title" -->
 
 Diagram
 
@@ -16,9 +16,9 @@ notes: In C++, structures will (generally) have their members located right next
 
 ===
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/3" data-auto-animate -->
 
-## Data Layout <!-- .element: data-id="Data Layout Title" -->
+## Data Layout <!-- .element: data-id="data-layout-title" -->
 
 ```cpp [1: 1-20|9,14|10,15|11,16|12,17]
 struct A {
@@ -42,7 +42,7 @@ auto main() -> int {
     return 0;
 }
 ```
-<!-- .element: data-id="Layout-Ex" -->
+<!-- .element: data-id="layout-ex" -->
 
 <!-- New diagram with animation showing the size of type incrementally and total size -->
 
@@ -54,9 +54,9 @@ notes: We can check the size of a type or object using the `sizeof` operator. He
 
 ===
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/4" data-auto-animate -->
 
-## Data Layout <!-- .element: data-id="Data Layout Title" -->
+## Data Layout <!-- .element: data-id="data-layout-title" -->
 
 ```cpp [1: 18]
 struct A {
@@ -81,7 +81,7 @@ auto main() -> int {
     return 0;
 }
 ```
-<!-- .element: data-id="Layout-Ex" -->
+<!-- .element: data-id="layout-ex" -->
 
 <!-- diagram showing struct total size confused with individual parts -->
 
@@ -92,6 +92,8 @@ auto main() -> int {
 notes: And given that our `A` type is only made of one of each type, its size should be the same! ...but not quite. If we actually check this on Godbolt using the `sizeof` operator we can see that our structures size is 12 bytes, not 9 bytes. What? Where did the extra bytes come from?<br><br>*Take questions*
 
 ---
+
+<!-- .slide: id="data-layout/padding" -->
 
 ### Padding
 
@@ -107,7 +109,7 @@ notes: In some situations the compiler may add empty bytes; known as padding, ar
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/cpu-memory-accesses" data-auto-animate -->
 
 #### CPU Memory Accesses
 
@@ -117,7 +119,7 @@ notes: Why is this important? Well, it all comes down to how the CPU accesses me
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/cpu-memory-accesses/packed-data" data-auto-animate -->
 
 #### CPU Memory Accesses
 
@@ -129,7 +131,7 @@ notes: Let's take a look at this using our `A` type. Let's say the next three in
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/cpu-memory-accesses/the-issue-with-packed-data" data-auto-animate -->
 
 #### CPU Memory Accesses
 
@@ -139,7 +141,7 @@ notes: Well, the compiler can shift the placement of members and datums such tha
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/cpu-memory-accesses/padded-data" data-auto-animate -->
 
 #### CPU Memory Accesses
 
@@ -151,6 +153,8 @@ notes: By adding padding after `A::chr` we have aligned `A::num` to a 4-byte bou
 
 ---
 
+<!-- .slide: id="data-layout/filler" -->
+
 This is supposed to be empty (check script)!
 
 <!-- diagram of retrieved memory and how data isn't being left out anymore using auto-slide and svgs -->
@@ -159,13 +163,13 @@ notes: Now the CPU has a much easier time access memory correctly as it can work
 
 ===
 
-<!-- .slide: data-id="ABI" data-auto-animate -->
+<!-- .slide: id="data-layout/abi" data-auto-animate -->
 
 ### Application Binary Interface
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/abi/apis" data-auto-animate -->
 
 ### Application Binary Interface
 
@@ -177,7 +181,7 @@ notes: When building a library you will often expose certain *symbols* which can
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="data-layout/abi-ext" data-auto-animate -->
 
 ### Application Binary Interface
 
@@ -187,7 +191,7 @@ notes: The compiled version of an API is what is known as the ABI (Application B
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="back-to-cpp" data-auto-animate -->
 
 ## Back to some C++
 

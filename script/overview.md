@@ -1,4 +1,4 @@
-<!-- .slide: id="Overview" -->
+<!-- .slide: id="overview" -->
 
 ## Overview
 

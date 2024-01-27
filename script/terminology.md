@@ -1,4 +1,4 @@
-<!-- .slide: id="Terminology" data-auto-animate -->
+<!-- .slide: id="terminology" data-auto-animate -->
 
 ## Terminology
 
@@ -6,11 +6,15 @@ notes: I want to start by to quickly defining some of the terminology I will be 
 
 ---
 
+<!-- .slide: id="terminology/object" -->
+
 ### Object
 
 When I refer to an *"object"* I am refer to a piece of data that lives in memory ie. the actual 1s and 0s that make up the piece of data. An object has *some* value which is of *some* type.
 
 ---
+
+<!-- .slide: id="terminology/value" -->
 
 ### Value
 
@@ -20,11 +24,15 @@ A *"value"* is the interpretation of some collection of bits according to a type
 
 ---
 
+<!-- .slide: id="terminology/type" -->
+
 ### Type
 
 The *"type"* of some value is an abstraction within the programming language which constrains what operations and values an object can have. This includes built-in data types like `int`, `float`, `char` etc., often called POD (Plain Old Data) types in C++ as well as user-defined types introduced using the `class` and `struct` keywords.
 
 ---
+
+<!-- .slide: id="terminology/identifier" -->
 
 ### Identifier
 
@@ -34,6 +42,8 @@ When referring to an *"identifier"* I am referring to the in-source name given t
 
 ---
 
+<!-- .slide: id="terminology/system_platform" -->
+
 ### System/Platform
 
 *"System"* or *"Platform"* refers to the Operating System (OS) kernel a computer is using in combination with any core libraries used to make a complete OS and the architecture of the CPU used to run the system.
@@ -41,6 +51,8 @@ When referring to an *"identifier"* I am referring to the in-source name given t
 <!-- Diagram of kernel in system stack -->
 
 ---
+
+<!-- .slide: id="terminology/target" -->
 
 ### Target
 
@@ -50,11 +62,15 @@ When referring to an *"identifier"* I am referring to the in-source name given t
 
 ---
 
+<!-- .slide: id="terminology/architecture" -->
+
 ### Architecture
 
 *"(CPU) Architecture"* is the instruction set of a CPU eg. x86/x86_64, ARM etc.
 
 ===
+
+<!-- .slide: id="notes" -->
 
 ## Notes
 

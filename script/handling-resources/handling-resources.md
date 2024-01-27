@@ -1,4 +1,4 @@
-<!-- .slide: id="Handling Resources" data-auto-animate -->
+<!-- .slide: id="handling-resources" data-auto-animate -->
 
 ## Handling Resources
 
@@ -6,9 +6,9 @@ notes: The purpose of types in a programming language is to provide an abstracti
 
 ===
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types" data-auto-animate -->
 
-### Resources
+### Resource Types
 
 - Memory<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
   - Static Memory<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
@@ -25,7 +25,7 @@ notes: Let's first have a look at some of the resources we can obtain from the s
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types/memory" data-auto-animate -->
 
 #### Memory
 
@@ -35,7 +35,7 @@ notes: The most common resource we can obtain is memory. All data must be stored
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types/files" data-auto-animate -->
 
 #### Files
 
@@ -45,7 +45,7 @@ notes: Some resources are acquired or obtained rather than allocated because the
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types/threads" data-auto-animate -->
 
 #### Threads
 
@@ -55,7 +55,7 @@ notes: Threads are are another allocated resource as it is something an OS hands
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types/locks" data-auto-animate -->
 
 #### Locks
 
@@ -65,7 +65,7 @@ notes: A lock (or mutex) is a bit of a combination of an allocated resource and 
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types/sockets" data-auto-animate -->
 
 #### Sockets
 
@@ -75,7 +75,7 @@ notes: Sockets are a resource in a similar vein to files. A socket is usually de
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/resource-types/manual-memory-management" data-auto-animate -->
 
 #### Manual Resource Management
 
@@ -83,7 +83,7 @@ notes: You might observe that all of the resources describe above have a *lifeti
 
 ===
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii" data-auto-animate -->
 
 ### RAII
 
@@ -93,13 +93,15 @@ notes: What if we could tie the lifetime of a resource to some *owning* object s
 
 ---
 
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics" data-auto-animate -->
+
 #### Value, Reference, Pointer and Move Semantics
 
 notes: Before we can talk about how to utilise RAII for our own types we need to discuss semantics. Semantics are the meaning a piece of code has in a programming language. The semantics of different expressions are important to understand as they describe how resources are copied, referenced or transferred between objects.
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/value-semantics" data-auto-animate -->
 
 ##### Value Semantics
 
@@ -111,7 +113,7 @@ notes: Before we can talk about how to utilise RAII for our own types we need to
                        x == y;        // true
                        &x == &y;      // false
 ```
-<!-- .element: class="fragment" data-id="Semantics-Ex1" -->
+<!-- .element: class="fragment" data-id="semantics-ex1" -->
 
 <span class="fragment" style="font-size: large;">See it on Godbolt ⚡:<a href="https://godbolt.org/z/5Prroaqr1">https://godbolt.org/z/5Prroaqr1</a></span>
 
@@ -119,7 +121,7 @@ notes: By default, C++ expressions have value semantics (or copy semantics) mean
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/reference-semantics/1" data-auto-animate -->
 
 ##### Reference Semantics
 
@@ -135,7 +137,7 @@ notes: By default, C++ expressions have value semantics (or copy semantics) mean
                        &x == &z;      // false
 
 ```
-<!-- .element: data-id="Semantics-Ex1" -->
+<!-- .element: data-id="semantics-ex1" -->
 
 <span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/5njr3nM6Y">https://godbolt.org/z/5njr3nM6Y</a></span>
 
@@ -143,7 +145,7 @@ notes: C++ allows you to introduce reference semantics as a second class type. R
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/reference-semantics/2" data-auto-animate -->
 
 ##### Reference Semantics
 
@@ -156,7 +158,7 @@ notes: C++ allows you to introduce reference semantics as a second class type. R
                    std::println("{}", x);  // 456
 
 ```
-<!-- .element: data-id="Semantics-Ex1" -->
+<!-- .element: data-id="semantics-ex1" -->
 
 notes: It is important to note that references in C++ cannot be rebound, if you assign to an existing reference it will mutate the referred to object.
 
@@ -164,7 +166,7 @@ notes: It is important to note that references in C++ cannot be rebound, if you 
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/1 data-auto-animate -->
 
 ##### Pointer Semantics
 
@@ -182,7 +184,7 @@ notes: It is important to note that references in C++ cannot be rebound, if you 
 
 
 ```
-<!-- .element: data-id="Semantics-Ex1" -->
+<!-- .element: data-id="semantics-ex1" -->
 
 <span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/8fxPjKT1d"></a>https://godbolt.org/z/8fxPjKT1d</span>
 
@@ -190,7 +192,7 @@ notes: Pointers allow us to achieve reference semantics as well however pointers
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/2 data-auto-animate -->
 
 ##### Pointer Semantics
 
@@ -208,7 +210,7 @@ notes: Pointers allow us to achieve reference semantics as well however pointers
 
 
 ```
-<!-- .element: data-id="Semantics-Ex1" -->
+<!-- .element: data-id="semantics-ex1" -->
 
 <span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/7a3vfrrn9">https://godbolt.org/z/7a3vfrrn9</a></span>
 
@@ -216,7 +218,7 @@ notes: Unlike references, pointers can be rebound to store a different address. 
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics data-auto-animate -->
 
 ##### Move Semantics
 
@@ -232,9 +234,9 @@ notes: Unlike references, pointers can be rebound to store a different address. 
 
 
 ```
-<!-- .element: data-id="Semantics-Ex1" -->
+<!-- .element: data-id="semantics-ex1" -->
 
-notes: Compared to reference and pointer semantics; which are used to share a resource, move semantics use used when we wish to transfer ownership of a resource. In this example we have constructed a string `x`. We then transfer or *move* ownership of any resources; in this case memory and data, from `x` to `y` and observe that now `y` owns that data previously found in `x` and `x` itself is empty.
+notes: Compared to reference and pointer semantics; which are used to share a resource, move semantics use used when we wish to transfer ownership of a resource. In this example we have constructed a string `x`. We then transfer or *move* ownership of any resources; in this case memory and data, from `x` to `y` and observe that now `y` owns that data previously found in `x` and with `x` itself is empty.
 
 ---
 

@@ -1,4 +1,4 @@
-<!-- .slide: id="Title" data-separator="^\r?\n\r?\n===\r?\n\r?\n" data-separator-vertical="^\r?\n\r?\n---\r?\n\r?\n" -->
+<!-- .slide: id="title" -->
 
 # Structured C++ <!-- class="r-fit-text" -->
 

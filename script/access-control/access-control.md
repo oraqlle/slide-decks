@@ -1,4 +1,4 @@
-<!-- .slide: id="Access Control" data-auto-animate -->
+<!-- .slide: id="access-control/description" data-auto-animate -->
 
 ## Access Control
 
@@ -14,7 +14,7 @@ note: C++ allows us to control which members can be accessed from outside the ty
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="access-control/table" data-auto-animate -->
 
 ## Access Control
 
@@ -28,7 +28,7 @@ notes: C++ has three access control labels, public, private and protected. `publ
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="access-control/example/before" data-auto-animate -->
 
 ## Access Control
 
@@ -50,11 +50,11 @@ auto main() -> int {
     return 0;
 }
 ```
-<!-- .element: data-id="Member-Access-Ex" -->
+<!-- .element: data-id="member-access-ex" -->
 
 ---
 
-<!-- .slide: data-auto-animate -->
+<!-- .slide: id="access-control/example/private" data-auto-animate -->
 
 ## Access Control
 
@@ -80,7 +80,7 @@ auto main() -> int {
     return 0;
 }
 ```
-<!-- .element: data-id="Member-Access-Ex" -->
+<!-- .element: data-id="member-access-ex" -->
 
 <span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/6PPqn9nsW">https://godbolt.org/z/6PPqn9nsW</a></span>
 
