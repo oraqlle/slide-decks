@@ -31,7 +31,7 @@ notes: Let's first have a look at some of the resources we can obtain from the s
 
 <!-- Diagram of different memory locations -->
 
-notes: The most common resource we can obtain is memory. All data must be stored somewhere; even the handles to the other resource types on this list, making memory the most sought after resource on a system. In general there are three types of memory available to a program; static, automatic and dynamic, with each having slightly different semantics for allocation and deallocation.<br><br>Static memory refers memory encoded directly into the executable file for a program. Static memory is allocated when the program is being executed and loaded into memory (RAM) by the kernel. Global variables and variables marked `static` are allocated as static memory.<br><br>Automatic memory or local memory is memory allocated onto the stack of a program at runtime. It is dubbed *automatic* memory because the lifetimes of these objects are managed by system. The instructions for allocating them into a stack frame is handled by the compiler and deallocation is handled by the deallocation of a whole stack frame.<br><br>Dynamic memory is memory that must be explicitly requested from the system. The lifetime of this memory is managed by the program (you) and thus must be manually returned to the system to avoid a *memory leak*.
+notes: The most common resource we can obtain is memory. All data must be stored somewhere; even the handles to the other resource types on this list, making memory the most sought after resource on a system. In general there are three types of memory available to a program; static, automatic and dynamic, with each having slightly different semantics for allocation and deallocation.<br><br>Static memory refers memory encoded directly into the executable file for a program. Static memory is allocated when the program is being executed and loaded into memory (RAM) by the kernel. Global variables and variables marked `static` are allocated as static memory.<br><br>Automatic memory or local memory is memory allocated onto the stack of a program at runtime. It is dubbed *automatic* memory because the lifetimes of these objects are managed by system. The instructions for allocating them into a stack frame is handled by the compiler and deallocation is handled by the deallocation of a whole stack frame.<br><br>Dynamic memory is memory that must be explicitly requested from the system. The lifetime of this memory is managed by the program (you) and thus must be manually returned to the system to avoid a *memory leak*. This memory often comes from a region of memory called the free store or sometimes referred to as *the heap*.
 
 ---
 
@@ -51,7 +51,7 @@ notes: Some resources are acquired or obtained rather than allocated because the
 
 <!-- Diagram of multiple threads running in a process -->
 
-Threads are are another allocated resource as it is something an OS hands out specifically due to there being a finite amount available, similar to how a system has a finite amount of memory it can allocate. Threads refer to a *thread of execution* or *an execution pathway*. By default, a process runs only one thread however it is possible for a process to have multiple threads. A thread is allocated once it has been allocated its own call stack and program counter, used to load the instructions the thread is going to execute. Threads are freed once they have terminated due to exhausting their work load and have been rejoined to the main thread ie. the spawning thread.
+notes: Threads are are another allocated resource as it is something an OS hands out specifically due to there being a finite amount available, similar to how a system has a finite amount of memory it can allocate. Threads refer to a *thread of execution* or *an execution pathway*. By default, a process runs only one thread however it is possible for a process to have multiple threads. A thread is allocated once it has been allocated its own call stack and program counter, used to load the instructions the thread is going to execute. Threads are freed once they have terminated due to exhausting their work load and have been rejoined to the main thread ie. the spawning thread.
 
 ---
 
@@ -73,37 +73,170 @@ notes: A lock (or mutex) is a bit of a combination of an allocated resource and 
 
 notes: Sockets are a resource in a similar vein to files. A socket is usually described using *file descriptor-like* object (on Unix systems at least) meaning they can be opened to be written to or read from and closed when not in use. Unlike files, sockets have many more operations available that are used to control how the socket is used eg. binding an address to a socket or have a socket listen for incoming connections.
 
+---
+
+<!-- .slide: data-auto-animate -->
+
+#### Manual Resource Management
+
+notes: You might observe that all of the resources describe above have a *lifetime*, some duration of time in which the resource is owned by a program or process. However, many of these resources (excluding static and stack memory) have to be manually managed ie. you must explicitly allocate or acquire the resource and once finished, explicitly free the resource. Manually managing resources is a notorious source of bugs as it can be hard to determine when the lifetime of a resource actually ends, especially when they are used in a concurrent environment where there may be multiple references to the resource.<br><br>One solution that was adopted was to introduce a parallel process that observed how objects and resources are used throughout the lifetime of the process and clean up any that are not in use. This technique is called Garbage Collection however, requiring an additional process to clean up resources can often be a no-go for programs that need to to be as efficient and fast as possible.
+
 ===
 
 <!-- .slide: data-auto-animate -->
 
 ### RAII
 
-<!-- What is RAII -->
+<!-- Diagram contrasting RAII object (mutex + lock) to non-RAII object (mutex) in terms of scope lifetime -->
+
+notes: What if we could tie the lifetime of a resource to some *owning* object such that when the object was constructed it acquired the resource and when destroyed it freed said resources? This would allow us to create handles to resources which can live on the stack, while owning some external resource like a region of dynamic memory, a socket etc.. In this model, handles are constructed and pushed onto the stack only once all resources acquired and when the handle is popped off the stack, it frees any resources it is holding onto, ensuring that no resource lives longer than it's owning object and thus preventing leaks! This idiom is nearly as old as C++ and is named *Resource Acquisition Is Initialization* or RAII.
 
 ---
 
-#### Object Lifetimes
+#### Value, Reference, Pointer and Move Semantics
 
-<!-- Talk about how the lifetime of members is bound to the outer scope (function or type). -->
-
----
-
-#### Value, Reference and Move Semantics
+notes: Before we can talk about how to utilise RAII for our own types we need to discuss semantics. Semantics are the meaning a piece of code has in a programming language. The semantics of different expressions are important to understand as they describe how resources are copied, referenced or transferred between objects.
 
 ---
+
+<!-- .slide: data-auto-animate -->
 
 ##### Value Semantics
 
-<!-- Copy Semantics -->
+<!-- Diagram of bytes being copied on different slide then code -->
+
+```cpp
+                       auto x = 123;  // x = 123
+                       auto y = x;    // y = 123
+                       x == y;        // true
+                       &x == &y;      // false
+```
+<!-- .element: class="fragment" data-id="Semantics-Ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡:<a href="https://godbolt.org/z/5Prroaqr1">https://godbolt.org/z/5Prroaqr1</a></span>
+
+notes: By default, C++ expressions have value semantics (or copy semantics) meaning that the resulting value of an expression is copied or duplicated when bound to a new object. Take the example (above), the semantics of `=` here are to bind the value from the RHS to the label (variable) on the LHS by copying the underlying data. This is true regardless of what the type is on the RHS but does depend on the type denoted on the LHS.
 
 ---
+
+<!-- .slide: data-auto-animate -->
 
 ##### Reference Semantics
 
+<!-- Diagram of bytes being referred on different slide then code -->
+
+```cpp
+                       auto x = 123;  // x = 123
+                       auto& y = x;   // y = 123
+                       auto z = y;    // z = 123
+                       x == y;        // true
+                       &x == &y;      // true
+                       x == z;        // true
+                       &x == &z;      // false
+
+```
+<!-- .element: data-id="Semantics-Ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/5njr3nM6Y">https://godbolt.org/z/5njr3nM6Y</a></span>
+
+notes: C++ allows you to introduce reference semantics as a second class type. Reference semantics are probably the type of semantics you are most familiar with as they are very popular in GC languages. In GC languages, a variables is implicitly a reference to an object; rather than being the object itself, with no way to explicitly dereference or follow the reference, it is all automatic. When you copy a reference in a GC language, it doesn't copy the underlying object, just the reference to it.<br><br>References in C++ operate in a similar way to GC languages except that you must explicitly denote when an object's type is a reference type otherwise value semantics will be used. We can see observe this in the example (above). First we create a reference to `x`, `y` and then bind a non-reference `z` to `y`. We can see that C++ sees `x` and `y` as the same object, ie. `y` is really just an alias to the object `x` however, because `z` is not a reference type the value of `x` was copied through `y` into a new object `z`.
+
 ---
 
+<!-- .slide: data-auto-animate -->
+
+##### Reference Semantics
+
+```cpp
+                   auto x = 123;           // x = 123
+                   auto& y = x;            // y = 123
+                   y = 456;                // z = 123
+                   x == y;                 // true
+                   &x == &y;               // true
+                   std::println("{}", x);  // 456
+
+```
+<!-- .element: data-id="Semantics-Ex1" -->
+
+notes: It is important to note that references in C++ cannot be rebound, if you assign to an existing reference it will mutate the referred to object.
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/edj1Tc9Wj">https://godbolt.org/z/edj1Tc9Wj</a></span>
+
+---
+
+<!-- .slide: data-auto-animate -->
+
+##### Pointer Semantics
+
+<!-- Diagram of bytes being copied for pointer but pointing to the same thing on different slide then code -->
+
+```cpp
+                       auto x = 123;  // x = 123
+                       auto* y = &x;  // y -> x
+                       auto z = y;    // z -> x
+                       x == *y;       // true
+                       &x == y;       // true
+                       x == *z;       // true
+                       &x == z;       // true
+                       y == z;        // true
+
+
+```
+<!-- .element: data-id="Semantics-Ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/8fxPjKT1d"></a>https://godbolt.org/z/8fxPjKT1d</span>
+
+notes: Pointers allow us to achieve reference semantics as well however pointers themselves store data, that being some memory address. Because of this, any operation performed on the pointer object directly will affect the pointer; not the pointed-to object. You must instead dereference a pointer using the indirection operator (prefix `*`) in order to access the object at the stored address. Notice in the example that assigning from a pointer will copy the pointer/address even though we haven't designated `z` is a pointer type like we did with `y` (can talk about `auto` type deduction).
+
+---
+
+<!-- .slide: data-auto-animate -->
+
+##### Pointer Semantics
+
+```cpp
+                       auto x = 123;  // x = 123
+                       auto* y = &x;  // y -> x
+                       auto z = *y;   // z = 123
+                       *y == z;       // true
+                       &x == y;       // true
+
+                       y = &z;        // y -> z
+                       &x == y;       // false
+                       &z == y;       // true
+                       *y == x;       // true
+
+
+```
+<!-- .element: data-id="Semantics-Ex1" -->
+
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/7a3vfrrn9">https://godbolt.org/z/7a3vfrrn9</a></span>
+
+notes: Unlike references, pointers can be rebound to store a different address. This will change which object is access through the indirection operator.
+
+---
+
+<!-- .slide: data-auto-animate -->
+
 ##### Move Semantics
+
+<!-- Diagram of ownership being transferred on different slide then code -->
+
+```cpp
+                  auto x = "abc"s;          // x = "abc"
+                  std::println("{:?}", x);
+                  
+                  auto y = std::move(x);    // y <- x
+                  std::println("{:?}", x);  // x = ""
+                  std::println("{:?}", y);  // y = "abc"
+
+
+```
+<!-- .element: data-id="Semantics-Ex1" -->
+
+notes: Compared to reference and pointer semantics; which are used to share a resource, move semantics use used when we wish to transfer ownership of a resource. In this example we have constructed a string `x`. We then transfer or *move* ownership of any resources; in this case memory and data, from `x` to `y` and observe that now `y` owns that data previously found in `x` and `x` itself is empty.
+
+---
 
 ===
 
