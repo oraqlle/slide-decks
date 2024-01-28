@@ -12,7 +12,7 @@
   - Constructors and Destructors<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
 - Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
   - Parametric Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
-  - Virtual Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
+  - Subtype Polymorphism<!-- .element: class="fragment fade-in-then-semi-out" style="font-size: xx-large;" -->
 <!-- - Static Storage Duration -->
 
 notes: During this meetup we will be discussing how to define our own types in C++ using classes
