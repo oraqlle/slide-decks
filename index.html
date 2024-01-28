@@ -92,8 +92,12 @@
                 </section>
 
                 <!-- Static Storage -->
-                <section id="Static Storage">
-                    <h2>Static Storage Duration</h2>
+
+                <!-- End -->
+                <section
+                    data-markdown="script/end.md"
+                    data-separator="^\r?\n===\r?\n"
+                    data-separator-vertical="^\r?\n---\r?\n">
                 </section>
 			</div>
 		</div>
@@ -111,7 +115,11 @@
                 slideNumber: true,
 
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ 
+                    RevealMarkdown,
+                    RevealHighlight,
+                    RevealNotes
+                ]
 			});
 		</script>
 	</body>
