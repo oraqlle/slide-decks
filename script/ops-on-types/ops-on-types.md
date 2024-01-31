@@ -129,7 +129,7 @@ notes: Implicitly all methods are defined to take a hidden first parameter. This
 
 <!-- .slide: id="defining-operations-on-types/to-string/the-this-pointer/elf-files" data-auto-animate -->
 
-<!-- Diagram of ELF file layout -->
+![elf-format](../../svg/elf-format.png)
 
 notes: This is because C++ does not store the instructions in the **.data** portion of the resulting executable ie. not with constant, static and stack variables but rather in the **.text** section of the executable alongside the rest of the programs instructions.<br><br>As such a method needs to be able to access the other data and members associated with type which is achieved by taking the address of the object and passing that to the method as its first parameter. We can see this effect illustrated by making `to_string()` a free function and passing a `A*` to it.
 

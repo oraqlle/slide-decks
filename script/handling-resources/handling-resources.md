@@ -29,7 +29,7 @@ notes: Let's first have a look at some of the resources we can obtain from the s
 
 #### Memory
 
-<!-- Diagram of different memory locations -->
+![memory-regions](../../svg/memory-regions.svg)
 
 notes: The most common resource we can obtain is memory. All data must be stored somewhere; even the handles to the other resource types on this list, making memory the most sought after resource on a system. In general there are three types of memory available to a program; static, automatic and dynamic, with each having slightly different semantics for allocation and deallocation.<br><br>Static memory refers memory encoded directly into the executable file for a program. Static memory is allocated when the program is being executed and loaded into memory (RAM) by the kernel. Global variables and variables marked `static` are allocated as static memory.<br><br>Automatic memory or local memory is memory allocated onto the stack of a program at runtime. It is dubbed *automatic* memory because the lifetimes of these objects are managed by system. The instructions for allocating them into a stack frame is handled by the compiler and deallocation is handled by the deallocation of a whole stack frame.<br><br>Dynamic memory is memory that must be explicitly requested from the system. The lifetime of this memory is managed by the program (you) and thus must be manually returned to the system to avoid a *memory leak*. This memory often comes from a region of memory called the free store or sometimes referred to as *the heap*.
 
@@ -49,7 +49,7 @@ notes: Some resources are acquired or obtained rather than allocated because the
 
 #### Threads
 
-<!-- Diagram of multiple threads running in a process -->
+![threads](../../svg/threads.svg)
 
 notes: Threads are are another allocated resource as it is something an OS hands out specifically due to there being a finite amount available, similar to how a system has a finite amount of memory it can allocate. Threads refer to a *thread of execution* or *an execution pathway*. By default, a process runs only one thread however it is possible for a process to have multiple threads. A thread is allocated once it has been allocated its own call stack and program counter, used to load the instructions the thread is going to execute. Threads are freed once they have terminated due to exhausting their work load and have been rejoined to the main thread ie. the spawning thread.
 
@@ -101,11 +101,17 @@ notes: Before we can talk about how to utilise RAII for our own types we need to
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/value-semantics" data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/value-semantics/1" data-auto-animate -->
 
 ##### Value Semantics
 
-<!-- Diagram of bytes being copied on different slide then code -->
+![copy-sem](../../svg/copy-sem.svg)
+
+---
+
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/value-semantics/2" data-auto-animate -->
+
+##### Value Semantics
 
 ```cpp
                        auto x = 123;  // x = 123
@@ -125,7 +131,13 @@ notes: By default, C++ expressions have value semantics (or copy semantics) mean
 
 ##### Reference Semantics
 
-<!-- Diagram of bytes being referred on different slide then code -->
+![ref-sem](../../svg/ref-sem.svg)
+
+---
+
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/reference-semantics/2" data-auto-animate -->
+
+##### Reference Semantics
 
 ```cpp
                        auto x = 123;  // x = 123
@@ -145,7 +157,7 @@ notes: C++ allows you to introduce reference semantics as a second class type. R
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/reference-semantics/2" data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/reference-semantics/3" data-auto-animate -->
 
 ##### Reference Semantics
 
@@ -170,7 +182,13 @@ notes: It is important to note that references in C++ cannot be rebound, if you 
 
 ##### Pointer Semantics
 
-<!-- Diagram of bytes being copied for pointer but pointing to the same thing on different slide then code -->
+![pointer-sem](../../svg/pointer-sem.svg)
+
+---
+
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/2" data-auto-animate -->
+
+##### Pointer Semantics
 
 ```cpp
                        auto x = 123;  // x = 123
@@ -192,7 +210,7 @@ notes: Pointers allow us to achieve reference semantics as well however pointers
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/2" data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/pointer-semantics/3" data-auto-animate -->
 
 ##### Pointer Semantics
 
@@ -218,11 +236,25 @@ notes: Unlike references, pointers can be rebound to store a different address. 
 
 ---
 
-<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics" data-auto-animate -->
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics/1" data-auto-animate -->
 
 ##### Move Semantics
 
-<!-- Diagram of ownership being transferred on different slide then code -->
+![move-sem-pre](../../svg/move-sem-pre.svg)
+
+---
+
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics/2" data-auto-animate -->
+
+##### Move Semantics
+
+![move-sem-post](../../svg/move-sem-post.svg)
+
+---
+
+<!-- .slide: id="handling-resources/raii/value-reference-pointer-and-move-semantics/move-semantics/3" data-auto-animate -->
+
+##### Move Semantics
 
 ```cpp
                   auto x = "abc"s;          // x = "abc"

@@ -1,0 +1,21 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 347 60.19999999999999" width="347" height="60.19999999999999" filter="invert(93%) hue-rotate(180deg)">
+  <!-- svg-source:excalidraw -->
+  
+  <defs>
+    <style class="style-fonts">
+      @font-face {
+        font-family: "Virgil";
+        src: url("https://excalidraw.com/Virgil.woff2");
+      }
+      @font-face {
+        font-family: "Cascadia";
+        src: url("https://excalidraw.com/Cascadia.woff2");
+      }
+      @font-face {
+        font-family: "Assistant";
+        src: url("https://excalidraw.com/Assistant-Regular.woff2");
+      }
+    </style>
+    
+  </defs>
+  <g transform="translate(175 10) rotate(0 65.91666412353516 16.80000000000001)"><text x="0" y="0" font-family="Cascadia, Segoe UI Emoji" font-size="28px" fill="#1e1e1e" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="text-before-edge">00010010</text></g><g transform="translate(309 31) rotate(0 14 9.599999999999994)"><text x="0" y="0" font-family="Cascadia, Segoe UI Emoji" font-size="16px" fill="#1e1e1e" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="text-before-edge">bin</text></g><g transform="translate(42.95833200000004 31) rotate(0 14 9.599999999999994)"><text x="0" y="0" font-family="Cascadia, Segoe UI Emoji" font-size="16px" fill="#1e1e1e" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="text-before-edge">dec</text></g><g transform="translate(10 10) rotate(0 16.47916603088379 16.80000000000001)"><text x="0" y="0" font-family="Cascadia, Segoe UI Emoji" font-size="28px" fill="#1e1e1e" text-anchor="start" style="white-space: pre;" direction="ltr" dominant-baseline="text-before-edge">18</text></g><g stroke-linecap="round"><g transform="translate(156 23.80000000000001) rotate(0 -31.5 0)"><path d="M0 0 C-10.5 0, -52.5 0, -63 0 M0 0 C-10.5 0, -52.5 0, -63 0" stroke="#1e1e1e" stroke-width="2" fill="none"></path></g><g transform="translate(156 23.80000000000001) rotate(0 -31.5 0)"><path d="M-39.51 -8.55 C-44.39 -6.77, -49.27 -5, -63 0 M-39.51 -8.55 C-46.31 -6.07, -53.12 -3.6, -63 0" stroke="#1e1e1e" stroke-width="2" fill="none"></path></g><g transform="translate(156 23.80000000000001) rotate(0 -31.5 0)"><path d="M-39.51 8.55 C-44.39 6.77, -49.27 5, -63 0 M-39.51 8.55 C-46.31 6.07, -53.12 3.6, -63 0" stroke="#1e1e1e" stroke-width="2" fill="none"></path></g></g><mask></mask></svg>

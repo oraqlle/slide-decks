@@ -17,6 +17,7 @@ notes: The other type of polymorphism C++ allows what is known as Subtype Polymo
 ```cpp [1:]
 struct Stringifiable {
     virtual auto to_string() -> std::string = 0;
+    virtual auto foo() const -> std::size_t = 0;
 };
 ```
 <!-- .element: class="fragment" data-id="subtyping-poly-ex1" -->
@@ -29,9 +30,10 @@ notes: Abstract classes are introduced into C++ by making the member functions o
 
 ##### Inheritance
 
-```cpp [1: 5|10-13|34|35|36|37|39-41|18|20-22|24-26|43|44|46-48]
+```cpp [1: 6|11-13|39|40|41|42|44-46|23|25-27|29-31|48|49|51-53]
 struct Stringifiable {
     virtual auto to_string() -> std::string = 0;
+        virtual auto foo() const -> std::size_t = 0;
 };
 
 struct A : public Stringifiable {
@@ -41,6 +43,10 @@ struct A : public Stringifiable {
 
     auto to_string() -> std::string {
         return std::format("A {{ {} }}", n);
+    }
+
+    auto foo() const -> std::size_t {
+        return 42;
     }
 
 private:
@@ -84,7 +90,7 @@ auto main() -> int {
 ```
 <!-- .element: data-id="subtyping-poly-ex1" -->
 
-<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/ee5fv7hPd">https://godbolt.org/z/ee5fv7hPd</a></span>
+<span class="fragment" style="font-size: large;">See it on Godbolt ⚡: <a href="https://godbolt.org/z/h71e8Pj1G">https://godbolt.org/z/h71e8Pj1G</a></span>
 
 notes: To inherit from a class you specify a `:` followed a class name(s), each prefixed with an access specifier (which defaults to `private`). Yes C++ supports multiple inheritance. It is also possible to inherit from a non-abstract classes as well which won't generate a vtable or require dynamic dispatch but rather will just compose the type together. We can call the superclass constructor(s) in the member initialiser list of the subclass's constructors in order to properly construct the superclass class(es). The superclass constructor(s) must appear before our subclass members in the initialiser list. To override a method you simply have to define a method of the same signature (return type, parameters, cv-quals etc.). You can keep the method pure-virtual by using the pure specifier again. You may also explicitly denote you are overriding a method by specifying it is `virtual` (again) and adding the `override` keyword at the end of the function signature however, it is important to note that you cannot use the trailing-return-type syntax with the `override` keyword.<br><br>Construction of objects from concrete classes works like any other class or type construction with the only difference being that member invocations on virtual methods are dynamically dispatched instead of statically. Dynamic dispatch means that the address of the correct method implementation is looked up using the vtable of a class at runtime while static dispatch means there is only a single possible implementation of a method and it is known at compile time thus the compiler can bake the methods address directly at the call site.<br><br>Abstract classes cannot be constructed directly but you can create pointers and references to abstract classes such that they can be bound to a subclass object. Again, method invocation is looked up using the class's vtable.<br><br>Note that you cannot have a template member function that is also virtual as it would be impossible for the compiler to determine the number of slots the vtable would need for each parameterization of the member.
 
@@ -108,7 +114,7 @@ notes: Here's a second look at the access specifiers table. Note that while we c
 
 #### Access Specifiers
 
-<!-- diagram with three members of the different access types showing public can interact with outside in derived, protected can interact inside in derived and private is purely in base class -->
+![access-specs-for-inheritance](../../svg/access-specs-for-inheritance.svg)
 
 ---
 
@@ -116,7 +122,7 @@ notes: Here's a second look at the access specifiers table. Note that while we c
 
 #### Virtual Tables
 
-<!-- diagram of the above classes' data layout and pointer to vtable and little animation showing how calling gets resolved -->
+![vtables](../../svg/vtables.svg)
 
 notes: So what is this virtual table that I keep speaking of. A vtable is a map between a class method calls and the implementation for said type. Each class (that has virtual members) gets one vtable with class objects storing a pointer to said vtable. Where the vtable is stored is up to the compiler but sometimes it is stored statically as part of the programs encoded data, sometimes it is placed somewhere within the class itself, usually before or after the region of memory allocated for data members if it is inlined into the class itself. Why do we need a vtable? Declaring a method `virtual` means that it's implementation *could* be defined in another class, namely in a subclass or superclass. Thus any class within the inheritance hierarchy needs a way to find and load the correct method implementation, it is this information that is stored in the vtable. When a class calls a virtual method, the vtable gets loaded into the CPU and queried for the address of the correct implementation for that type.
 
@@ -125,6 +131,8 @@ notes: So what is this virtual table that I keep speaking of. A vtable is a map 
 <!-- .slide: id="polymorphism/subtyping-polymorphism/the-cost-of-virtual-tables" -->
 
 ##### The Cost of Virtual Tables
+
+![vtables](../../svg/vtables.svg)
 
 notes: As we've seen demonstrated, the use of dynamic dispatch for subclass polymorphism adds a lot more information to a type and even more runtime work in terms of lookup of methods. This is a pretty high cost for abstraction meaning that virtual functions and dynamic dispatch are solemnly used in C++ as the performance cost is too high in the situations you would use C++ as well as being to unpredictable. Instead, simple type composition (ie. non virtual or abstract classes) using the inheritance syntax, templates or a combination of the two are chosen in favour. This tradeoff usually means longer compile times but much quicker runtimes. There is even an entire design pattern in C++ can *Curiously Recurring Template Pattern* which uses the inheritance mechanism on templated superclasses to create interfaces in which static or regular dispatch is used. An entire sublibrary of the C++ standard library (Ranges) uses this exact technique as a fundamental pillar of it's abstraction model.
 

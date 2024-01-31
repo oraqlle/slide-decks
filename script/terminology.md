@@ -12,6 +12,8 @@ notes: I want to start by to quickly defining some of the terminology I will be 
 
 When I refer to an *"object"* I am refer to a piece of data that lives in memory ie. the actual 1s and 0s that make up the piece of data. An object has *some* value which is of *some* type.
 
+![cpp-bin-object-term](../svg/cpp-bin-object-term.svg)
+
 ---
 
 <!-- .slide: id="terminology/value" -->
@@ -20,7 +22,7 @@ When I refer to an *"object"* I am refer to a piece of data that lives in memory
 
 A *"value"* is the interpretation of some collection of bits according to a type. What this means is that the same set of bits *might* have different meanings depending on whatever type they are bound by.
 
-<!-- Diagram illustrating this example: the bits `11110010011011010101111010111101` have the have the value `-227713347` when interpreted as a C `int` but have the value `4067253949` when interpreted as a C `unsigned int`. -->
+![cpp-values-term](../svg/cpp-values-term.svg)
 
 ---
 
@@ -28,7 +30,13 @@ A *"value"* is the interpretation of some collection of bits according to a type
 
 ### Type
 
-The *"type"* of some value is an abstraction within the programming language which constrains what operations and values an object can have. This includes built-in data types like `int`, `float`, `char` etc., often called POD (Plain Old Data) types in C++ as well as user-defined types introduced using the `class` and `struct` keywords.
+<span style="font-size: x-large;">
+    The <em>"type"</em> of some value is an abstraction within the programming language which constrains what operations and values an object can have. This includes built-in data types like <code>int</code>, <code>float</code>, <code>char</code> etc., often called POD (Plain Old Data) types in C++ as well as user-defined types introduced using the <code>class</code> and <code>struct</code> keywords.
+</p>
+
+<!-- Diagram illustrating this example: the bits `11110010011011010101111010111101` have the have the value `-227713347` when interpreted as a C `int` but have the value `4067253949` when interpreted as a C `unsigned int`. -->
+
+![cpp-types-terms](../svg/cpp-types-terms.svg)
 
 ---
 
