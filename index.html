@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>C++ Classes</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/dracula.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+                <!-- Title slide -->
+				<section id="Title Slide">
+                    <h1 class="r-fit-text">C++ Classes</h1>
+                    <p>By Tyler Swann</p>
+                </section>
+
+                <!-- Overview of topics covered in this meetup -->
+				<section id="Overview" data-auto-animate>
+                    <h2>Overview</h2>
+                    <ul style="font-size: xx-large;">
+						<li>Some Terminology</li>
+						<li>Basic Data Aggregations</li>
+						<li>Data Layout</li>
+                        <li>Access Control</li>
+                        <li>Defining Operations on Custom Types</li>
+						<li>Handling Resources</li>
+                        <ul>
+                            <li>RAII</li>
+                            <li>Constructors and Destructors</li>
+                        </ul>
+                        <li>Polymorphism</li>
+                        <ul>
+                            <li>Parametric Polymorphism</li>
+                            <li>Virtual Polymorphism</li>
+                        </ul>
+					</ul>
+                </section>
+
+                <!-- Definitions and terminology -->
+                <section id="Some Terminology">
+                    <!-- TODO: Add drawings for each definition -->
+                    <h2>Some Terminology</h2>
+                    <section data-markdown>
+                        <textarea data-template>
+                            When I refer to an *"object"* I am refer to a piece of data that lives in memory ie. the
+                            actual 1s and 0s that make up the piece of data. An object has some value which is
+                            of *some* type.
+                        </textarea>
+                    </section>
+                    <section data-markdown>
+                        <textarea data-template>
+                            A *"value"* is the interpretation of some collection of bits according to a type. What
+                            this means is that the same set of bits *might* have different meanings depending on
+                            whatever type they are bound by eg. the bits `11110010011011010101111010111101` have the
+                            value `-227713347` when interpreted as a C `int` but have the value `4067253949` when
+                            interpreted as a C `unsigned int`.
+                        </textarea>
+                    </section>
+                    <section data-markdown>
+                        <textarea data-template>
+                            The *"type"* of some value is an abstraction within a programming language that allows
+                            us to constrain what operations and values an object can have.
+                        </textarea>
+                    </section>
+                </section>
+
+                <!-- Basic aggregate data structures -->
+                <section id="Aggregate Data">
+                    <h2>Basic Data Aggregations</h2>
+                </section>
+
+                <!-- Data layouts in C++ -->
+                <section id="Data Layout">
+                    <h2>Data Layout</h2>
+                </section>
+
+
+                <section id="Access Control">
+                    <h2>Access Control</h2>
+                </section>
+
+                <section id="Operations">
+                    <h2>Defining Operations on Custom Types</h2>
+                </section>
+
+                <section id="Handling Resources">
+                    <h2>Handling Resources</h2>
+                </section>
+
+                <section id="Static Storage">
+                    <h2>Static Storage Duration</h2>
+                </section>
+
+                <section id="Polymorphism">
+                    <h2>Polymorphism</h2>
+                </section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+                slideNumber: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
