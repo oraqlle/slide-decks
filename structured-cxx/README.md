@@ -1,17 +1,13 @@
 # Structured C++
 
-This is a [reveal.js] presentation for a talk discussion how C++ classes work which took place during a internal meetup between Monash DeepNeuron members.
+This is a [reveal.js] slide-deck for a workshop I gave to Monash DeepNeuron (fellow) members in January of 2024. The workshop was an overview of how C++ classes/types work and looked at everything from how data is laid in memory for custom types in C++ as well as some of the forms of polymorphism C++ is capable of.
 
-## Setup
-
-```sh
-npm install
-```
-
-## Present
+## Building Slides
 
 ```sh
-npm start
+npm install  # Setup reveal.js
+
+npm start  # Present (locally) in browser
 ```
 
 ## Licensing
@@ -20,4 +16,6 @@ npm start
 
 [reveal.js]: https://reveal.js
 [LICENSE-REVEALJS]: ./LICENSE-REVEALJS
-[LICENSE]: ./LICENSE
+[LICENSE]: ../LICENSE
+
+[Go to root README](../README.md)
