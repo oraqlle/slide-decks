@@ -1,4 +1,4 @@
-name: tests
+name: revealjs-ci
 
 on:
   - push
@@ -15,6 +15,7 @@ jobs:
         node-version:
           - 18
           - 20
+        dir: ["structured-cxx"]
 
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +26,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: npm install
+        working-directory: ${{ matrix.dir }}
       - run: npm run build --if-present
+        working-directory: ${{ matrix.dir }}
       - run: npm test
         env:
           CI: true
+        working-directory: ${{ matrix.dir }}
